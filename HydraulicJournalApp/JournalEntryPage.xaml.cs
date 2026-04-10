@@ -114,13 +114,7 @@ public partial class JournalEntryPage : ContentPage
                 IssueDatePicker.Date ?? DateTime.Now,
                 kitType);
 
-            DesignationEntry.Text = string.Empty;
-            ProductNameEntry.Text = string.Empty;
-            CustomerPicker.SelectedItem = null;
-            DeveloperPicker.SelectedItem = null;
-            KitTypePicker.SelectedIndex = 0;
-
-            SetProductFieldsEditable(true);
+            ResetForm();
 
             await DisplayAlert("Готово", "Запись журнала сохранена.", "OK");
         }
@@ -128,5 +122,24 @@ public partial class JournalEntryPage : ContentPage
         {
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
+    }
+
+    private void ResetForm()
+    {
+        DesignationEntry.Text = string.Empty;
+        ProductNameEntry.Text = string.Empty;
+
+        CustomerPicker.SelectedItem = null;
+        DeveloperPicker.SelectedItem = null;
+
+        IssueDatePicker.Date = DateTime.Today;
+        KitTypePicker.SelectedIndex = 0;
+
+        SetProductFieldsEditable(true);
+    }
+
+    private void OnResetClicked(object sender, EventArgs e)
+    {
+        ResetForm();
     }
 }

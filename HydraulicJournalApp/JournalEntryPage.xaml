@@ -26,7 +26,15 @@
                 </Picker.Items>
             </Picker>
 
-            <Button Text="Сохранить запись" Clicked="OnAddJournalEntry" />
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Сохранить запись"
+                        Clicked="OnAddJournalEntry"
+                        HorizontalOptions="FillAndExpand" />
+
+                <Button Text="Сброс"
+                        Clicked="OnResetClicked"
+                        HorizontalOptions="FillAndExpand" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

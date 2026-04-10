@@ -1,10 +1,12 @@
-﻿namespace HydraulicJournalApp
+﻿namespace HydraulicJournalApp;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(DeveloperDetailsPage), typeof(DeveloperDetailsPage));
+        Routing.RegisterRoute(nameof(CustomerDetailsPage), typeof(CustomerDetailsPage));
     }
 }

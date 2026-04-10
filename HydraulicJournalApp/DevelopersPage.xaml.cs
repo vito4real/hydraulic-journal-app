@@ -37,4 +37,15 @@ public partial class DevelopersPage : ContentPage
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
+
+    private async void OnOpenDeveloperClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (button.CommandParameter is not int developerId)
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(DeveloperDetailsPage)}?developerId={developerId}");
+    }
 }

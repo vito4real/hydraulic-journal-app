@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HydraulicJournalApp.DeveloperDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Разработчик">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="12">
+        <Label x:Name="DeveloperNameLabel"
+               Text="Разработчик"
+               FontSize="24"
+               FontAttributes="Bold" />
+
+        <Label Grid.Row="1"
+               Text="Изделия разработчика"
+               FontAttributes="Bold"
+               Margin="0,12,0,8" />
+
+        <CollectionView Grid.Row="2"
+                        x:Name="DeveloperProductsList"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="0,0,0,8">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Designation}" FontAttributes="Bold" />
+                            <Label Text="{Binding ProductName}" />
+                            <Label Text="{Binding IssueDateDisplay}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

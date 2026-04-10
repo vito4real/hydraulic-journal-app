@@ -37,4 +37,15 @@ public partial class CustomersPage : ContentPage
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
+
+    private async void OnOpenCustomerClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (button.CommandParameter is not int customerId)
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(CustomerDetailsPage)}?customerId={customerId}");
+    }
 }

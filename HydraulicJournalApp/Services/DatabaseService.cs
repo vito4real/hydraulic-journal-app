@@ -326,6 +326,50 @@ public class DatabaseService
         return _db.Table<Product>()
             .FirstOrDefaultAsync(x => x.Designation == designation);
     }
+
+    public Task<Developer?> GetDeveloperByIdAsync(int developerId)
+    {
+        return _db.Table<Developer>()
+            .FirstOrDefaultAsync(x => x.Id == developerId);
+    }
+
+    public async Task<List<Product>> GetProductsByCustomerAsync(int customerId)
+    {
+        return await _db.Table<Product>()
+            .Where(x => x.CustomerId == customerId)
+            .OrderBy(x => x.Designation)
+            .ToListAsync();
+    }
+
+    public async Task<List<DeveloperProductListItem>> GetProductsByDeveloperAsync(int developerId)
+    {
+        var entries = await _db.Table<JournalEntry>()
+            .Where(x => x.DeveloperId == developerId)
+            .OrderByDescending(x => x.IssueDate)
+            .ToListAsync();
+
+        var products = await _db.Table<Product>().ToListAsync();
+
+        var result = entries
+            .Select(entry =>
+            {
+                var product = products.FirstOrDefault(x => x.Id == entry.ProductId);
+
+                return new DeveloperProductListItem
+                {
+                    ProductId = entry.ProductId,
+                    Designation = product?.Designation ?? string.Empty,
+                    ProductName = product?.Name ?? string.Empty,
+                    IssueDate = entry.IssueDate
+                };
+            })
+            .GroupBy(x => x.ProductId)
+            .Select(g => g.First())
+            .OrderBy(x => x.Designation)
+            .ToList();
+
+        return result;
+    }
 }
 
 public class JournalEntryListItem
@@ -340,6 +384,16 @@ public class JournalEntryListItem
 
     public string KitTypeDisplay =>
         KitType == KitType.Experimental ? "Опытный" : "Контрольный";
+
+    public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
+}
+
+public class DeveloperProductListItem
+{
+    public int ProductId { get; set; }
+    public string Designation { get; set; } = string.Empty;
+    public string ProductName { get; set; } = string.Empty;
+    public DateTime IssueDate { get; set; }
 
     public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
 }

@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Клиенты">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="12">
         <Label Text="Клиенты"
                FontSize="24"
                FontAttributes="Bold" />
@@ -15,12 +15,33 @@
             <Button Text="Добавить клиента" Clicked="OnAddCustomer" />
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="2" x:Name="CustomersList" SelectionMode="None">
+        <Grid Grid.Row="2"
+              ColumnDefinitions="3*,Auto"
+              ColumnSpacing="10"
+              Padding="8"
+              BackgroundColor="#D9D9D9">
+            <Label Grid.Column="0" Text="Клиент" FontAttributes="Bold" />
+            <Label Grid.Column="1" Text="Действие" FontAttributes="Bold" />
+        </Grid>
+
+        <CollectionView Grid.Row="3"
+                        x:Name="CustomersList"
+                        SelectionMode="None"
+                        Margin="0,4,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Frame Padding="10" Margin="0,0,0,8">
-                        <Label Text="{Binding Name}" />
-                    </Frame>
+                    <Grid ColumnDefinitions="3*,Auto"
+                          ColumnSpacing="10"
+                          Padding="8">
+                        <Label Grid.Column="0"
+                               Text="{Binding Name}"
+                               VerticalOptions="Center" />
+
+                        <Button Grid.Column="1"
+                                Text="Открыть"
+                                Clicked="OnOpenCustomerClicked"
+                                CommandParameter="{Binding Id}" />
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

@@ -6,9 +6,14 @@
     xmlns:local="clr-namespace:HydraulicJournalApp"
     Title="HydraulicJournalApp">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <ShellContent
+            Title="Журнал"
+            ContentTemplate="{DataTemplate local:MainPage}" />
+
+        <ShellContent
+            Title="Справочники"
+            ContentTemplate="{DataTemplate local:DirectoriesPage}" />
+    </TabBar>
 
 </Shell>

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HydraulicJournalApp.DirectoriesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Справочники">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="12" Spacing="14">
+
+            <Label Text="Справочники"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Frame Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Добавить заказчика" FontAttributes="Bold" />
+                    <Entry x:Name="CustomerEntry" Placeholder="Название заказчика" />
+                    <Button Text="Добавить заказчика" Clicked="OnAddCustomer" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Добавить разработчика" FontAttributes="Bold" />
+                    <Entry x:Name="DeveloperEntry" Placeholder="ФИО разработчика" />
+                    <Button Text="Добавить разработчика" Clicked="OnAddDeveloper" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Добавить изделие" FontAttributes="Bold" />
+                    <Entry x:Name="DesignationEntry" Placeholder="Обозначение" />
+                    <Entry x:Name="ProductNameEntry" Placeholder="Наименование" />
+                    <Picker x:Name="CustomerPicker" Title="Выбери заказчика" />
+                    <Button Text="Добавить изделие" Clicked="OnAddProduct" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Добавить запись в журнал" FontAttributes="Bold" />
+                    <Picker x:Name="ProductPicker" Title="Изделие" />
+                    <Picker x:Name="DeveloperPicker" Title="Разработчик" />
+                    <DatePicker x:Name="IssueDatePicker" />
+                    <Picker x:Name="KitTypePicker" Title="Тип комплекта">
+                        <Picker.Items>
+                            <x:String>Опытный</x:String>
+                            <x:String>Контрольный</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Button Text="Добавить запись" Clicked="OnAddJournalEntry" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

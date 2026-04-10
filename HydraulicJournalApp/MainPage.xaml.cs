@@ -1,24 +1,25 @@
-﻿namespace HydraulicJournalApp
+﻿using HydraulicJournalApp.Services;
+
+namespace HydraulicJournalApp;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    private readonly DatabaseService _db;
+
+    public MainPage(DatabaseService db)
     {
-        int count = 0;
+        InitializeComponent();
+        _db = db;
+    }
 
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LoadJournalAsync();
+    }
 
-        private void OnCounterClicked(object? sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
-        }
+    private async Task LoadJournalAsync()
+    {
+        JournalList.ItemsSource = await _db.GetJournalEntriesAsync();
     }
 }

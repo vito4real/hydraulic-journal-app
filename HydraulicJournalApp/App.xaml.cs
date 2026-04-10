@@ -4,12 +4,12 @@ namespace HydraulicJournalApp;
 
 public partial class App : Application
 {
-    private readonly DatabaseService _databaseService;
+    private readonly DatabaseService _db;
 
-    public App(DatabaseService databaseService)
+    public App(DatabaseService db)
     {
         InitializeComponent();
-        _databaseService = databaseService;
+        _db = db;
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
@@ -18,7 +18,7 @@ public partial class App : Application
 
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            await _databaseService.InitAsync();
+            await _db.InitAsync();
         });
 
         return window;

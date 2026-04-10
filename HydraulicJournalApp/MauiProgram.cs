@@ -23,6 +23,7 @@ public static class MauiProgram
 
         var dbPath = Path.Combine(AppContext.BaseDirectory, "HydraulicJournal.db");
         builder.Services.AddSingleton(new DatabaseService(dbPath));
+        builder.Services.AddSingleton<AccessGuardService>();
 
         return builder.Build();
     }

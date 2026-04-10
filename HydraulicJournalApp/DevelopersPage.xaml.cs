@@ -5,11 +5,13 @@ namespace HydraulicJournalApp;
 public partial class DevelopersPage : ContentPage
 {
     private readonly DatabaseService _db;
+    private readonly AccessGuardService _accessGuard;
 
-    public DevelopersPage(DatabaseService db)
+    public DevelopersPage(DatabaseService db, AccessGuardService accessGuard)
     {
         InitializeComponent();
         _db = db;
+        _accessGuard = accessGuard;
     }
 
     protected override async void OnAppearing()
@@ -27,6 +29,9 @@ public partial class DevelopersPage : ContentPage
     {
         try
         {
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
             await _db.AddDeveloperAsync(DeveloperEntry.Text ?? string.Empty);
             DeveloperEntry.Text = string.Empty;
             await LoadDataAsync();

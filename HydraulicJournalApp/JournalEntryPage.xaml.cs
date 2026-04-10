@@ -6,13 +6,15 @@ namespace HydraulicJournalApp;
 public partial class JournalEntryPage : ContentPage
 {
     private readonly DatabaseService _db;
+    private readonly AccessGuardService _accessGuard;
     private List<Customer> _customers = new();
     private List<Developer> _developers = new();
 
-    public JournalEntryPage(DatabaseService db)
+    public JournalEntryPage(DatabaseService db, AccessGuardService accessGuard)
     {
         InitializeComponent();
         _db = db;
+        _accessGuard = accessGuard;
     }
 
     protected override async void OnAppearing()
@@ -84,6 +86,9 @@ public partial class JournalEntryPage : ContentPage
     {
         try
         {
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
             if (CustomerPicker.SelectedItem is not Customer customer)
             {
                 await DisplayAlert("Ошибка", "Выбери клиента.", "OK");

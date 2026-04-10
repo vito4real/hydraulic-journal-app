@@ -11,7 +11,7 @@
                    FontSize="24"
                    FontAttributes="Bold" />
 
-            <Entry x:Name="DesignationEntry" Placeholder="Обозначение изделия" />
+            <Entry x:Name="DesignationEntry" Placeholder="Обозначение изделия" Unfocused="OnDesignationUnfocused" />
             <Entry x:Name="ProductNameEntry" Placeholder="Наименование изделия" />
 
             <Picker x:Name="CustomerPicker" Title="Клиент" />

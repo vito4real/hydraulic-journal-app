@@ -318,6 +318,14 @@ public class DatabaseService
 
         return entry.Id;
     }
+
+    public Task<Product?> GetProductByDesignationAsync(string designation)
+    {
+        designation = (designation ?? string.Empty).Trim();
+
+        return _db.Table<Product>()
+            .FirstOrDefaultAsync(x => x.Designation == designation);
+    }
 }
 
 public class JournalEntryListItem

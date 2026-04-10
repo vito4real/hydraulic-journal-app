@@ -19,6 +19,7 @@ public partial class JournalEntryPage : ContentPage
     {
         base.OnAppearing();
         await LoadDataAsync();
+        SetProductFieldsEditable(true);
     }
 
     private async Task LoadDataAsync()
@@ -34,6 +35,49 @@ public partial class JournalEntryPage : ContentPage
 
         if (KitTypePicker.SelectedIndex < 0)
             KitTypePicker.SelectedIndex = 0;
+    }
+
+    private void SetProductFieldsEditable(bool isEditable)
+    {
+        ProductNameEntry.IsEnabled = isEditable;
+        CustomerPicker.IsEnabled = isEditable;
+    }
+
+    private async void OnDesignationUnfocused(object? sender, FocusEventArgs e)
+    {
+        try
+        {
+            var designation = (DesignationEntry.Text ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(designation))
+            {
+                ProductNameEntry.Text = string.Empty;
+                CustomerPicker.SelectedItem = null;
+                SetProductFieldsEditable(true);
+                return;
+            }
+
+            var existingProduct = await _db.GetProductByDesignationAsync(designation);
+
+            if (existingProduct == null)
+            {
+                ProductNameEntry.Text = string.Empty;
+                CustomerPicker.SelectedItem = null;
+                SetProductFieldsEditable(true);
+                return;
+            }
+
+            ProductNameEntry.Text = existingProduct.Name;
+
+            var customer = _customers.FirstOrDefault(x => x.Id == existingProduct.CustomerId);
+            CustomerPicker.SelectedItem = customer;
+
+            SetProductFieldsEditable(false);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
     }
 
     private async void OnAddJournalEntry(object sender, EventArgs e)
@@ -75,6 +119,8 @@ public partial class JournalEntryPage : ContentPage
             CustomerPicker.SelectedItem = null;
             DeveloperPicker.SelectedItem = null;
             KitTypePicker.SelectedIndex = 0;
+
+            SetProductFieldsEditable(true);
 
             await DisplayAlert("Готово", "Запись журнала сохранена.", "OK");
         }

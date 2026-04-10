@@ -38,14 +38,20 @@ public partial class DevelopersPage : ContentPage
         }
     }
 
-    private async void OnOpenDeveloperClicked(object sender, EventArgs e)
+    private async void OnDeveloperSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (sender is not Button button)
-            return;
+        try
+        {
+            if (e.CurrentSelection.FirstOrDefault() is not HydraulicJournalApp.Models.Developer developer)
+                return;
 
-        if (button.CommandParameter is not int developerId)
-            return;
+            DevelopersList.SelectedItem = null;
 
-        await Shell.Current.GoToAsync($"{nameof(DeveloperDetailsPage)}?developerId={developerId}");
+            await Shell.Current.GoToAsync($"{nameof(DeveloperDetailsPage)}?developerId={developer.Id}");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
     }
 }

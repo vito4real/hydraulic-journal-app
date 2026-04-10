@@ -26,21 +26,15 @@
 
         <CollectionView Grid.Row="3"
                         x:Name="DevelopersList"
-                        SelectionMode="None"
+                        SelectionMode="Single"
+                        SelectionChanged="OnDeveloperSelectionChanged"
                         Margin="0,4,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="3*,Auto"
-                          ColumnSpacing="10"
-                          Padding="8">
-                        <Label Grid.Column="0"
-                               Text="{Binding FullName}"
-                               VerticalOptions="Center" />
-
-                        <Button Grid.Column="1"
-                                Text="Открыть"
-                                Clicked="OnOpenDeveloperClicked"
-                                CommandParameter="{Binding Id}" />
+                    <Grid ColumnDefinitions="*"
+                        Padding="8">
+                        <Label Text="{Binding FullName}"
+                            VerticalOptions="Center" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

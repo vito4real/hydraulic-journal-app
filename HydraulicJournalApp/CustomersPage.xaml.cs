@@ -38,14 +38,20 @@ public partial class CustomersPage : ContentPage
         }
     }
 
-    private async void OnOpenCustomerClicked(object sender, EventArgs e)
+    private async void OnCustomerSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (sender is not Button button)
-            return;
+        try
+        {
+            if (e.CurrentSelection.FirstOrDefault() is not HydraulicJournalApp.Models.Customer customer)
+                return;
 
-        if (button.CommandParameter is not int customerId)
-            return;
+            CustomersList.SelectedItem = null;
 
-        await Shell.Current.GoToAsync($"{nameof(CustomerDetailsPage)}?customerId={customerId}");
+            await Shell.Current.GoToAsync($"{nameof(CustomerDetailsPage)}?customerId={customer.Id}");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
     }
 }

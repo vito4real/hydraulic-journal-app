@@ -26,21 +26,15 @@
 
         <CollectionView Grid.Row="3"
                         x:Name="CustomersList"
-                        SelectionMode="None"
+                        SelectionMode="Single"
+                        SelectionChanged="OnCustomerSelectionChanged"
                         Margin="0,4,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="3*,Auto"
-                          ColumnSpacing="10"
-                          Padding="8">
-                        <Label Grid.Column="0"
-                               Text="{Binding Name}"
-                               VerticalOptions="Center" />
-
-                        <Button Grid.Column="1"
-                                Text="Открыть"
-                                Clicked="OnOpenCustomerClicked"
-                                CommandParameter="{Binding Id}" />
+                    <Grid ColumnDefinitions="*"
+                        Padding="8">
+                        <Label Text="{Binding Name}"
+                            VerticalOptions="Center" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

@@ -1,17 +1,26 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using HydraulicJournalApp.Services;
 
-namespace HydraulicJournalApp
+namespace HydraulicJournalApp;
+
+public partial class App : Application
 {
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
-        }
+    private readonly DatabaseService _databaseService;
 
-        protected override Window CreateWindow(IActivationState? activationState)
+    public App(DatabaseService databaseService)
+    {
+        InitializeComponent();
+        _databaseService = databaseService;
+    }
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = new Window(new AppShell());
+
+        MainThread.BeginInvokeOnMainThread(async () =>
         {
-            return new Window(new AppShell());
-        }
+            await _databaseService.InitAsync();
+        });
+
+        return window;
     }
 }

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Журнал">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="10">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="10">
 
         <Label Grid.Row="0"
                Text="Журнал выдачи чертежей"
@@ -13,6 +13,31 @@
                Margin="0,0,0,10" />
 
         <Grid Grid.Row="1"
+            ColumnDefinitions="*,*,*,Auto"
+            ColumnSpacing="10"
+            Margin="0,0,0,10">
+
+            <Entry Grid.Column="0"
+                x:Name="DesignationSearchEntry"
+                Placeholder="Поиск по обозначению"
+                TextChanged="OnSearchTextChanged" />
+
+            <Entry Grid.Column="1"
+                x:Name="CustomerSearchEntry"
+                Placeholder="Поиск по заказчику"
+                TextChanged="OnSearchTextChanged" />
+
+            <Entry Grid.Column="2"
+                x:Name="DeveloperSearchEntry"
+                Placeholder="Поиск по разработчику"
+                TextChanged="OnSearchTextChanged" />
+
+            <Button Grid.Column="3"
+                    Text="Сброс"
+                    Clicked="OnResetFiltersClicked" />
+        </Grid>
+
+        <Grid Grid.Row="2"
               ColumnDefinitions="2.2*,1.6*,1.2*,1.4*,1.8*"
               Padding="8"
               BackgroundColor="#D9D9D9"
@@ -24,7 +49,7 @@
             <Label Grid.Column="4" Text="Заказчик" FontAttributes="Bold" />
         </Grid>
 
-        <CollectionView Grid.Row="2"
+        <CollectionView Grid.Row="3"
                         x:Name="JournalList"
                         Margin="0,4,0,0"
                         SelectionMode="None">

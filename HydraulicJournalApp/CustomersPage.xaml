@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HydraulicJournalApp.CustomersPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Клиенты">
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="12">
+        <Label Text="Клиенты"
+               FontSize="24"
+               FontAttributes="Bold" />
+
+        <VerticalStackLayout Grid.Row="1" Spacing="8" Margin="0,12,0,12">
+            <Entry x:Name="CustomerEntry" Placeholder="Название клиента" />
+            <Button Text="Добавить клиента" Clicked="OnAddCustomer" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="2" x:Name="CustomersList" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="0,0,0,8">
+                        <Label Text="{Binding Name}" />
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

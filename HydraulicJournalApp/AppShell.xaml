@@ -12,8 +12,16 @@
             ContentTemplate="{DataTemplate local:MainPage}" />
 
         <ShellContent
-            Title="Справочники"
-            ContentTemplate="{DataTemplate local:DirectoriesPage}" />
+            Title="Разработчики"
+            ContentTemplate="{DataTemplate local:DevelopersPage}" />
+
+        <ShellContent
+            Title="Клиенты"
+            ContentTemplate="{DataTemplate local:CustomersPage}" />
+
+        <ShellContent
+            Title="Новая запись"
+            ContentTemplate="{DataTemplate local:JournalEntryPage}" />
     </TabBar>
 
 </Shell>

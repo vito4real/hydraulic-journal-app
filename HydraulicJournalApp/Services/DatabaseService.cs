@@ -238,6 +238,86 @@ public class DatabaseService
 
         return result;
     }
+
+    public async Task<int> AddJournalEntryWithProductAsync(
+    string designation,
+    string productName,
+    int customerId,
+    int developerId,
+    DateTime issueDate,
+    KitType kitType)
+    {
+        designation = (designation ?? string.Empty).Trim();
+        productName = (productName ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(designation))
+            throw new Exception("Обозначение изделия обязательно.");
+
+        if (customerId <= 0)
+            throw new Exception("Клиент должен быть выбран.");
+
+        if (developerId <= 0)
+            throw new Exception("Разработчик должен быть выбран.");
+
+        var existingProduct = await _db.Table<Product>()
+            .FirstOrDefaultAsync(x => x.Designation == designation);
+
+        if (existingProduct == null)
+        {
+            var newProduct = new Product
+            {
+                Designation = designation,
+                Name = productName,
+                CustomerId = customerId
+            };
+
+            await _db.InsertAsync(newProduct);
+
+            var newEntry = new JournalEntry
+            {
+                ProductId = newProduct.Id,
+                DeveloperId = developerId,
+                IssueDate = issueDate,
+                KitType = kitType
+            };
+
+            await _db.InsertAsync(newEntry);
+
+            return newEntry.Id;
+        }
+
+        if (existingProduct.CustomerId != customerId)
+        {
+            var existingCustomer = await _db.Table<Customer>()
+                .FirstOrDefaultAsync(x => x.Id == existingProduct.CustomerId);
+
+            var existingCustomerName = existingCustomer?.Name ?? "Неизвестный клиент";
+
+            throw new Exception(
+                $"Обозначение \"{designation}\" уже занято для клиента: {existingCustomerName}.");
+        }
+
+        var existingJournalEntry = await _db.Table<JournalEntry>()
+            .FirstOrDefaultAsync(x => x.ProductId == existingProduct.Id);
+
+        if (existingJournalEntry != null)
+        {
+            throw new Exception(
+                $"Запись в журнале для обозначения \"{designation}\" уже существует от {existingJournalEntry.IssueDate:dd.MM.yyyy}.");
+        }
+
+        var entry = new JournalEntry
+        {
+            ProductId = existingProduct.Id,
+            DeveloperId = developerId,
+            IssueDate = issueDate,
+            KitType = kitType
+        };
+
+        await _db.InsertAsync(entry);
+
+        return entry.Id;
+    }
 }
 
 public class JournalEntryListItem

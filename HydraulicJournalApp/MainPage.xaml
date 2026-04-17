@@ -17,21 +17,46 @@
             ColumnSpacing="10"
             Margin="0,0,0,10">
 
-            <Entry Grid.Column="0"
-                x:Name="DesignationSearchEntry"
-                Placeholder="Поиск по обозначению"
-                TextChanged="OnSearchTextChanged" />
+            <!-- Поиск по обозначению -->
+            <Frame Grid.Column="0"
+                Padding="6"
+                BorderColor="#007ACC"
+                BackgroundColor="#F5FAFF"
+                CornerRadius="8"
+                HasShadow="False">
+                <Entry x:Name="DesignationSearchEntry"
+                    Placeholder="Поиск по обозначению / наименованию"
+                    TextChanged="OnSearchTextChanged"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-            <Entry Grid.Column="1"
-                x:Name="DeveloperSearchEntry"
-                Placeholder="Поиск по разработчику"
-                TextChanged="OnSearchTextChanged" />
+            <!-- Поиск по разработчику -->
+            <Frame Grid.Column="1"
+                Padding="6"
+                BorderColor="#007ACC"
+                BackgroundColor="#F5FAFF"
+                CornerRadius="8"
+                HasShadow="False">
+                <Entry x:Name="DeveloperSearchEntry"
+                    Placeholder="Поиск по разработчику"
+                    TextChanged="OnSearchTextChanged"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-            <Entry Grid.Column="2"
-                x:Name="CustomerSearchEntry"
-                Placeholder="Поиск по заказчику"
-                TextChanged="OnSearchTextChanged" />
+            <!-- Поиск по заказчику -->
+            <Frame Grid.Column="2"
+                Padding="6"
+                BorderColor="#007ACC"
+                BackgroundColor="#F5FAFF"
+                CornerRadius="8"
+                HasShadow="False">
+                <Entry x:Name="CustomerSearchEntry"
+                    Placeholder="Поиск по заказчику"
+                    TextChanged="OnSearchTextChanged"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
+            <!-- Кнопка -->
             <Button Grid.Column="3"
                     Text="Сброс"
                     Clicked="OnResetFiltersClicked" />

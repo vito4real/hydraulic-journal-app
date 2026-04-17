@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Разработчики">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="12">
         <Label Text="Разработчики"
                FontSize="24"
                FontAttributes="Bold" />
@@ -15,7 +15,21 @@
             <Button Text="Добавить разработчика" Clicked="OnAddDeveloper" />
         </VerticalStackLayout>
 
-        <Grid Grid.Row="2"
+        <Frame Grid.Row="2"
+               Padding="6"
+               Margin="0,0,0,8"
+               BorderColor="#007ACC"
+               BackgroundColor="#F5FAFF"
+               CornerRadius="8"
+               HasShadow="False">
+
+            <Entry x:Name="DeveloperSearchEntry"
+                   Placeholder="Поиск по разработчику"
+                   TextChanged="OnSearchTextChanged"
+                   BackgroundColor="Transparent" />
+        </Frame>
+
+        <Grid Grid.Row="3"
               ColumnDefinitions="3*,Auto"
               ColumnSpacing="10"
               Padding="8"
@@ -24,7 +38,7 @@
             <Label Grid.Column="1" Text="Действие" FontAttributes="Bold" />
         </Grid>
 
-        <CollectionView Grid.Row="3"
+        <CollectionView Grid.Row="4"
                         x:Name="DevelopersList"
                         SelectionMode="Single"
                         SelectionChanged="OnDeveloperSelectionChanged"
@@ -32,9 +46,9 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*"
-                        Padding="8">
+                          Padding="8">
                         <Label Text="{Binding FullName}"
-                            VerticalOptions="Center" />
+                               VerticalOptions="Center" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

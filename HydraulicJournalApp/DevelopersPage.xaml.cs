@@ -1,4 +1,5 @@
-﻿using HydraulicJournalApp.Services;
+﻿using HydraulicJournalApp.Models;
+using HydraulicJournalApp.Services;
 
 namespace HydraulicJournalApp;
 
@@ -6,6 +7,7 @@ public partial class DevelopersPage : ContentPage
 {
     private readonly DatabaseService _db;
     private readonly AccessGuardService _accessGuard;
+    private List<Developer> _allDevelopers = new();
 
     public DevelopersPage(DatabaseService db, AccessGuardService accessGuard)
     {
@@ -22,7 +24,26 @@ public partial class DevelopersPage : ContentPage
 
     private async Task LoadDataAsync()
     {
-        DevelopersList.ItemsSource = await _db.GetDevelopersAsync();
+        _allDevelopers = await _db.GetDevelopersAsync();
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var search = (DeveloperSearchEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _allDevelopers
+            .Where(x =>
+                string.IsNullOrWhiteSpace(search) ||
+                x.FullName.Contains(search, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        DevelopersList.ItemsSource = filtered;
+    }
+
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ApplyFilter();
     }
 
     private async void OnAddDeveloper(object sender, EventArgs e)
@@ -47,7 +68,7 @@ public partial class DevelopersPage : ContentPage
     {
         try
         {
-            if (e.CurrentSelection.FirstOrDefault() is not HydraulicJournalApp.Models.Developer developer)
+            if (e.CurrentSelection.FirstOrDefault() is not Developer developer)
                 return;
 
             DevelopersList.SelectedItem = null;

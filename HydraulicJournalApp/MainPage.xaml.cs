@@ -45,7 +45,7 @@ public partial class MainPage : ContentPage
             &&
             (string.IsNullOrWhiteSpace(developerFilter) ||
              x.DeveloperName.Contains(developerFilter, StringComparison.OrdinalIgnoreCase))
-        ).ToList();
+        ).OrderBy(x => x.Designation).ToList();
 
         JournalList.ItemsSource = filtered;
     }

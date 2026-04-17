@@ -38,15 +38,16 @@
         </Grid>
 
         <Grid Grid.Row="2"
-              ColumnDefinitions="2.2*,1.6*,1.2*,1.4*,1.8*"
-              Padding="8"
-              BackgroundColor="#D9D9D9"
-              ColumnSpacing="8">
+            ColumnDefinitions="1.8*,2.2*,1.6*,1.2*,1.4*,1.8*"
+            Padding="8"
+            BackgroundColor="#D9D9D9"
+            ColumnSpacing="8">
             <Label Grid.Column="0" Text="Обозначение изделия" FontAttributes="Bold" />
-            <Label Grid.Column="1" Text="Разработчик" FontAttributes="Bold" />
-            <Label Grid.Column="2" Text="Дата выдачи" FontAttributes="Bold" />
-            <Label Grid.Column="3" Text="Вид комплекта" FontAttributes="Bold" />
-            <Label Grid.Column="4" Text="Заказчик" FontAttributes="Bold" />
+            <Label Grid.Column="1" Text="Наименование изделия" FontAttributes="Bold" />
+            <Label Grid.Column="2" Text="Разработчик" FontAttributes="Bold" />
+            <Label Grid.Column="3" Text="Дата выдачи" FontAttributes="Bold" />
+            <Label Grid.Column="4" Text="Вид комплекта" FontAttributes="Bold" />
+            <Label Grid.Column="5" Text="Заказчик" FontAttributes="Bold" />
         </Grid>
 
         <CollectionView Grid.Row="3"
@@ -55,30 +56,34 @@
                         SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="2.2*,1.6*,1.2*,1.4*,1.8*"
-                          Padding="8"
-                          ColumnSpacing="8">
+                    <Grid ColumnDefinitions="1.8*,2.2*,1.6*,1.2*,1.4*,1.8*"
+                        Padding="8"
+                        ColumnSpacing="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <Label Grid.Column="0"
-                               Text="{Binding Designation}"
-                               LineBreakMode="TailTruncation" />
+                            Text="{Binding Designation}"
+                            LineBreakMode="TailTruncation" />
 
                         <Label Grid.Column="1"
-                               Text="{Binding DeveloperName}"
-                               LineBreakMode="TailTruncation" />
+                            Text="{Binding ProductName}"
+                            LineBreakMode="TailTruncation" />
 
                         <Label Grid.Column="2"
-                               Text="{Binding IssueDateDisplay}" />
+                            Text="{Binding DeveloperName}"
+                            LineBreakMode="TailTruncation" />
 
                         <Label Grid.Column="3"
-                               Text="{Binding KitTypeDisplay}" />
+                            Text="{Binding IssueDateDisplay}" />
 
                         <Label Grid.Column="4"
-                               Text="{Binding CustomerName}"
-                               LineBreakMode="TailTruncation" />
+                            Text="{Binding KitTypeDisplay}" />
+
+                        <Label Grid.Column="5"
+                            Text="{Binding CustomerName}"
+                            LineBreakMode="TailTruncation" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

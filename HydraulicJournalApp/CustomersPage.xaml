@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Клиенты">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="12">
         <Label Text="Клиенты"
                FontSize="24"
                FontAttributes="Bold" />
@@ -15,7 +15,13 @@
             <Button Text="Добавить клиента" Clicked="OnAddCustomer" />
         </VerticalStackLayout>
 
-        <Grid Grid.Row="2"
+        <Entry Grid.Row="2"
+               x:Name="CustomerSearchEntry"
+               Placeholder="Поиск по клиенту"
+               TextChanged="OnSearchTextChanged"
+               Margin="0,0,0,8" />
+
+        <Grid Grid.Row="3"
               ColumnDefinitions="3*,Auto"
               ColumnSpacing="10"
               Padding="8"
@@ -24,7 +30,7 @@
             <Label Grid.Column="1" Text="Действие" FontAttributes="Bold" />
         </Grid>
 
-        <CollectionView Grid.Row="3"
+        <CollectionView Grid.Row="4"
                         x:Name="CustomersList"
                         SelectionMode="Single"
                         SelectionChanged="OnCustomerSelectionChanged"
@@ -32,9 +38,9 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*"
-                        Padding="8">
+                          Padding="8">
                         <Label Text="{Binding Name}"
-                            VerticalOptions="Center" />
+                               VerticalOptions="Center" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

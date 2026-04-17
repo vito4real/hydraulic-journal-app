@@ -1,4 +1,5 @@
-﻿using HydraulicJournalApp.Services;
+﻿using HydraulicJournalApp.Models;
+using HydraulicJournalApp.Services;
 
 namespace HydraulicJournalApp;
 
@@ -6,6 +7,7 @@ public partial class CustomersPage : ContentPage
 {
     private readonly DatabaseService _db;
     private readonly AccessGuardService _accessGuard;
+    private List<Customer> _allCustomers = new();
 
     public CustomersPage(DatabaseService db, AccessGuardService accessGuard)
     {
@@ -22,7 +24,26 @@ public partial class CustomersPage : ContentPage
 
     private async Task LoadDataAsync()
     {
-        CustomersList.ItemsSource = await _db.GetCustomersAsync();
+        _allCustomers = await _db.GetCustomersAsync();
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var search = (CustomerSearchEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _allCustomers
+            .Where(x =>
+                string.IsNullOrWhiteSpace(search) ||
+                x.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        CustomersList.ItemsSource = filtered;
+    }
+
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ApplyFilter();
     }
 
     private async void OnAddCustomer(object sender, EventArgs e)
@@ -47,7 +68,7 @@ public partial class CustomersPage : ContentPage
     {
         try
         {
-            if (e.CurrentSelection.FirstOrDefault() is not HydraulicJournalApp.Models.Customer customer)
+            if (e.CurrentSelection.FirstOrDefault() is not Customer customer)
                 return;
 
             CustomersList.SelectedItem = null;

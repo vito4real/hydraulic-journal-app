@@ -15,11 +15,19 @@
             <Button Text="Добавить клиента" Clicked="OnAddCustomer" />
         </VerticalStackLayout>
 
-        <Entry Grid.Row="2"
-               x:Name="CustomerSearchEntry"
-               Placeholder="Поиск по клиенту"
-               TextChanged="OnSearchTextChanged"
-               Margin="0,0,0,8" />
+        <Frame Grid.Row="2"
+            Padding="6"
+            Margin="0,0,0,8"
+            BorderColor="#007ACC"
+            BackgroundColor="#F5FAFF"
+            CornerRadius="8"
+            HasShadow="False">
+
+            <Entry x:Name="CustomerSearchEntry"
+                Placeholder="Поиск по клиенту"
+                TextChanged="OnSearchTextChanged"
+                BackgroundColor="Transparent" />
+        </Frame>
 
         <Grid Grid.Row="3"
               ColumnDefinitions="3*,Auto"

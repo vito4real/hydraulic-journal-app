@@ -207,7 +207,6 @@ public class DatabaseService
     public async Task<List<JournalEntryListItem>> GetJournalEntriesAsync()
     {
         var entries = await _db.Table<JournalEntry>()
-            .OrderByDescending(x => x.IssueDate)
             .ToListAsync();
 
         var products = await _db.Table<Product>().ToListAsync();

@@ -11,11 +11,80 @@
                    FontSize="24"
                    FontAttributes="Bold" />
 
-            <Entry x:Name="DesignationEntry" Placeholder="Обозначение изделия" Unfocused="OnDesignationUnfocused" />
-            <Entry x:Name="ProductNameEntry" Placeholder="Наименование изделия" />
+            <Entry x:Name="DesignationEntry"
+                   Placeholder="Обозначение изделия"
+                   Unfocused="OnDesignationUnfocused" />
 
-            <Picker x:Name="CustomerPicker" Title="Клиент" />
-            <Picker x:Name="DeveloperPicker" Title="Разработчик" />
+            <Entry x:Name="ProductNameEntry"
+                   Placeholder="Наименование изделия" />
+
+            <Label Text="Клиент" />
+
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                <Entry x:Name="CustomerSearchEntry"
+                       Placeholder="Начните вводить клиента"
+                       TextChanged="OnCustomerSearchTextChanged"
+                       Focused="OnCustomerSearchFocused"
+                       BackgroundColor="Transparent" />
+            </Frame>
+
+            <Border x:Name="CustomerResultsBorder"
+                    Stroke="#D0D7DE"
+                    StrokeThickness="1"
+                    BackgroundColor="White"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 8">
+                <CollectionView x:Name="CustomerResultsList"
+                                SelectionMode="Single"
+                                SelectionChanged="OnCustomerSelected"
+                                MaximumHeightRequest="180">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10">
+                                <Label Text="{Binding Name}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+            <Label Text="Разработчик" />
+
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                <Entry x:Name="DeveloperSearchEntry"
+                       Placeholder="Начните вводить разработчика"
+                       TextChanged="OnDeveloperSearchTextChanged"
+                       Focused="OnDeveloperSearchFocused"
+                       BackgroundColor="Transparent" />
+            </Frame>
+
+            <Border x:Name="DeveloperResultsBorder"
+                    Stroke="#D0D7DE"
+                    StrokeThickness="1"
+                    BackgroundColor="White"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 8">
+                <CollectionView x:Name="DeveloperResultsList"
+                                SelectionMode="Single"
+                                SelectionChanged="OnDeveloperSelected"
+                                MaximumHeightRequest="180">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10">
+                                <Label Text="{Binding FullName}" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
 
             <DatePicker x:Name="IssueDatePicker" />
 

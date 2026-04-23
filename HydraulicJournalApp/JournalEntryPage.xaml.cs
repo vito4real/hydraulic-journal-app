@@ -7,8 +7,12 @@ public partial class JournalEntryPage : ContentPage
 {
     private readonly DatabaseService _db;
     private readonly AccessGuardService _accessGuard;
+
     private List<Customer> _customers = new();
     private List<Developer> _developers = new();
+
+    private Customer? _selectedCustomer;
+    private Developer? _selectedDeveloper;
 
     public JournalEntryPage(DatabaseService db, AccessGuardService accessGuard)
     {
@@ -29,11 +33,8 @@ public partial class JournalEntryPage : ContentPage
         _customers = await _db.GetCustomersAsync();
         _developers = await _db.GetDevelopersAsync();
 
-        CustomerPicker.ItemsSource = _customers;
-        CustomerPicker.ItemDisplayBinding = new Binding("Name");
-
-        DeveloperPicker.ItemsSource = _developers;
-        DeveloperPicker.ItemDisplayBinding = new Binding("FullName");
+        CustomerResultsList.ItemsSource = _customers;
+        DeveloperResultsList.ItemsSource = _developers;
 
         if (KitTypePicker.SelectedIndex < 0)
             KitTypePicker.SelectedIndex = 0;
@@ -42,7 +43,7 @@ public partial class JournalEntryPage : ContentPage
     private void SetProductFieldsEditable(bool isEditable)
     {
         ProductNameEntry.IsEnabled = isEditable;
-        CustomerPicker.IsEnabled = isEditable;
+        CustomerSearchEntry.IsEnabled = isEditable;
     }
 
     private async void OnDesignationUnfocused(object? sender, FocusEventArgs e)
@@ -54,7 +55,9 @@ public partial class JournalEntryPage : ContentPage
             if (string.IsNullOrWhiteSpace(designation))
             {
                 ProductNameEntry.Text = string.Empty;
-                CustomerPicker.SelectedItem = null;
+                _selectedCustomer = null;
+                CustomerSearchEntry.Text = string.Empty;
+                CustomerResultsBorder.IsVisible = false;
                 SetProductFieldsEditable(true);
                 return;
             }
@@ -64,7 +67,9 @@ public partial class JournalEntryPage : ContentPage
             if (existingProduct == null)
             {
                 ProductNameEntry.Text = string.Empty;
-                CustomerPicker.SelectedItem = null;
+                _selectedCustomer = null;
+                CustomerSearchEntry.Text = string.Empty;
+                CustomerResultsBorder.IsVisible = false;
                 SetProductFieldsEditable(true);
                 return;
             }
@@ -72,7 +77,9 @@ public partial class JournalEntryPage : ContentPage
             ProductNameEntry.Text = existingProduct.Name;
 
             var customer = _customers.FirstOrDefault(x => x.Id == existingProduct.CustomerId);
-            CustomerPicker.SelectedItem = customer;
+            _selectedCustomer = customer;
+            CustomerSearchEntry.Text = customer?.Name ?? string.Empty;
+            CustomerResultsBorder.IsVisible = false;
 
             SetProductFieldsEditable(false);
         }
@@ -82,6 +89,88 @@ public partial class JournalEntryPage : ContentPage
         }
     }
 
+    private void OnCustomerSearchFocused(object sender, FocusEventArgs e)
+    {
+        ApplyCustomerFilter();
+    }
+
+    private void OnDeveloperSearchFocused(object sender, FocusEventArgs e)
+    {
+        ApplyDeveloperFilter();
+    }
+
+    private void OnCustomerSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_selectedCustomer != null &&
+            string.Equals(e.NewTextValue, _selectedCustomer.Name, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _selectedCustomer = null;
+        ApplyCustomerFilter();
+    }
+
+    private void OnDeveloperSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_selectedDeveloper != null &&
+            string.Equals(e.NewTextValue, _selectedDeveloper.FullName, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _selectedDeveloper = null;
+        ApplyDeveloperFilter();
+    }
+
+    private void ApplyCustomerFilter()
+    {
+        var search = (CustomerSearchEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _customers
+            .Where(x => string.IsNullOrWhiteSpace(search) ||
+                        x.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        CustomerResultsList.ItemsSource = filtered;
+        CustomerResultsBorder.IsVisible = filtered.Count > 0 && CustomerSearchEntry.IsEnabled;
+    }
+
+    private void ApplyDeveloperFilter()
+    {
+        var search = (DeveloperSearchEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _developers
+            .Where(x => string.IsNullOrWhiteSpace(search) ||
+                        x.FullName.Contains(search, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        DeveloperResultsList.ItemsSource = filtered;
+        DeveloperResultsBorder.IsVisible = filtered.Count > 0;
+    }
+
+    private void OnCustomerSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is not Customer customer)
+            return;
+
+        _selectedCustomer = customer;
+        CustomerSearchEntry.Text = customer.Name;
+        CustomerResultsBorder.IsVisible = false;
+        CustomerResultsList.SelectedItem = null;
+    }
+
+    private void OnDeveloperSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is not Developer developer)
+            return;
+
+        _selectedDeveloper = developer;
+        DeveloperSearchEntry.Text = developer.FullName;
+        DeveloperResultsBorder.IsVisible = false;
+        DeveloperResultsList.SelectedItem = null;
+    }
+
     private async void OnAddJournalEntry(object sender, EventArgs e)
     {
         try
@@ -89,21 +178,21 @@ public partial class JournalEntryPage : ContentPage
             if (!await _accessGuard.EnsureWriteAccessAsync(this))
                 return;
 
-            if (CustomerPicker.SelectedItem is not Customer customer)
+            if (_selectedCustomer is not Customer customer)
             {
-                await DisplayAlert("Ошибка", "Выбери клиента.", "OK");
+                await DisplayAlert("Ошибка", "Выберите клиента.", "OK");
                 return;
             }
 
-            if (DeveloperPicker.SelectedItem is not Developer developer)
+            if (_selectedDeveloper is not Developer developer)
             {
-                await DisplayAlert("Ошибка", "Выбери разработчика.", "OK");
+                await DisplayAlert("Ошибка", "Выберите разработчика.", "OK");
                 return;
             }
 
             if (KitTypePicker.SelectedIndex < 0)
             {
-                await DisplayAlert("Ошибка", "Выбери тип комплекта.", "OK");
+                await DisplayAlert("Ошибка", "Выберите тип комплекта.", "OK");
                 return;
             }
 
@@ -134,8 +223,14 @@ public partial class JournalEntryPage : ContentPage
         DesignationEntry.Text = string.Empty;
         ProductNameEntry.Text = string.Empty;
 
-        CustomerPicker.SelectedItem = null;
-        DeveloperPicker.SelectedItem = null;
+        _selectedCustomer = null;
+        _selectedDeveloper = null;
+
+        CustomerSearchEntry.Text = string.Empty;
+        DeveloperSearchEntry.Text = string.Empty;
+
+        CustomerResultsBorder.IsVisible = false;
+        DeveloperResultsBorder.IsVisible = false;
 
         IssueDatePicker.Date = DateTime.Today;
         KitTypePicker.SelectedIndex = 0;

@@ -10,6 +10,7 @@ public partial class JournalEntryPage : ContentPage
 
     private List<Customer> _customers = new();
     private List<Developer> _developers = new();
+    private List<Product> _products = new();
 
     private Customer? _selectedCustomer;
     private Developer? _selectedDeveloper;
@@ -32,9 +33,12 @@ public partial class JournalEntryPage : ContentPage
     {
         _customers = await _db.GetCustomersAsync();
         _developers = await _db.GetDevelopersAsync();
+        _products = await _db.GetProductsAsync();
 
         CustomerResultsList.ItemsSource = _customers;
         DeveloperResultsList.ItemsSource = _developers;
+        DesignationResultsList.ItemsSource = _products;
+        ProductNameResultsList.ItemsSource = _products;
 
         if (KitTypePicker.SelectedIndex < 0)
             KitTypePicker.SelectedIndex = 0;
@@ -50,6 +54,8 @@ public partial class JournalEntryPage : ContentPage
     {
         try
         {
+            DesignationResultsBorder.IsVisible = false;
+
             var designation = (DesignationEntry.Text ?? string.Empty).Trim();
 
             if (string.IsNullOrWhiteSpace(designation))
@@ -66,7 +72,6 @@ public partial class JournalEntryPage : ContentPage
 
             if (existingProduct == null)
             {
-                ProductNameEntry.Text = string.Empty;
                 _selectedCustomer = null;
                 CustomerSearchEntry.Text = string.Empty;
                 CustomerResultsBorder.IsVisible = false;
@@ -81,12 +86,107 @@ public partial class JournalEntryPage : ContentPage
             CustomerSearchEntry.Text = customer?.Name ?? string.Empty;
             CustomerResultsBorder.IsVisible = false;
 
-            SetProductFieldsEditable(false);
+            SetProductFieldsEditable(true);
         }
         catch (Exception ex)
         {
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
+    }
+
+    private void OnDesignationFocused(object sender, FocusEventArgs e)
+    {
+        ApplyDesignationFilter();
+    }
+
+    private void OnProductNameFocused(object sender, FocusEventArgs e)
+    {
+        ApplyProductNameFilter();
+    }
+
+    private void OnDesignationTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ApplyDesignationFilter();
+    }
+
+    private void OnProductNameTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ApplyProductNameFilter();
+    }
+
+    private void ApplyDesignationFilter()
+    {
+        var search = (DesignationEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _products
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Designation) &&
+                (string.IsNullOrWhiteSpace(search) ||
+                 x.Designation.Contains(search, StringComparison.OrdinalIgnoreCase)))
+            .OrderBy(x => x.Designation)
+            .ToList();
+
+        DesignationResultsList.ItemsSource = filtered;
+        DesignationResultsBorder.IsVisible = filtered.Count > 0 && DesignationEntry.IsFocused;
+    }
+
+    private void ApplyProductNameFilter()
+    {
+        var search = (ProductNameEntry.Text ?? string.Empty).Trim();
+
+        var filtered = _products
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Name) &&
+                (string.IsNullOrWhiteSpace(search) ||
+                 x.Name.Contains(search, StringComparison.OrdinalIgnoreCase)))
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        ProductNameResultsList.ItemsSource = filtered;
+        ProductNameResultsBorder.IsVisible =
+            filtered.Count > 0 &&
+            ProductNameEntry.IsFocused &&
+            ProductNameEntry.IsEnabled;
+    }
+
+    private void OnDesignationSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is not Product product)
+            return;
+
+        DesignationEntry.Text = product.Designation;
+        ProductNameEntry.Text = product.Name;
+
+        var customer = _customers.FirstOrDefault(x => x.Id == product.CustomerId);
+        _selectedCustomer = customer;
+        CustomerSearchEntry.Text = customer?.Name ?? string.Empty;
+
+        DesignationResultsBorder.IsVisible = false;
+        ProductNameResultsBorder.IsVisible = false;
+
+        DesignationResultsList.SelectedItem = null;
+
+        SetProductFieldsEditable(true);
+    }
+
+    private void OnProductNameSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is not Product product)
+            return;
+
+        ProductNameEntry.Text = product.Name;
+        DesignationEntry.Text = product.Designation;
+
+        var customer = _customers.FirstOrDefault(x => x.Id == product.CustomerId);
+        _selectedCustomer = customer;
+        CustomerSearchEntry.Text = customer?.Name ?? string.Empty;
+
+        DesignationResultsBorder.IsVisible = false;
+        ProductNameResultsBorder.IsVisible = false;
+
+        ProductNameResultsList.SelectedItem = null;
+
+        SetProductFieldsEditable(true);
     }
 
     private void OnCustomerSearchFocused(object sender, FocusEventArgs e)
@@ -208,6 +308,7 @@ public partial class JournalEntryPage : ContentPage
                 IssueDatePicker.Date ?? DateTime.Now,
                 kitType);
 
+            await LoadDataAsync();
             ResetForm();
 
             await DisplayAlert("Готово", "Запись журнала сохранена.", "OK");
@@ -229,6 +330,8 @@ public partial class JournalEntryPage : ContentPage
         CustomerSearchEntry.Text = string.Empty;
         DeveloperSearchEntry.Text = string.Empty;
 
+        DesignationResultsBorder.IsVisible = false;
+        ProductNameResultsBorder.IsVisible = false;
         CustomerResultsBorder.IsVisible = false;
         DeveloperResultsBorder.IsVisible = false;
 

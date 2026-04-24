@@ -11,12 +11,82 @@
                    FontSize="24"
                    FontAttributes="Bold" />
 
-            <Entry x:Name="DesignationEntry"
-                   Placeholder="Обозначение изделия"
-                   Unfocused="OnDesignationUnfocused" />
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                <Entry x:Name="DesignationEntry"
+                       Placeholder="Обозначение изделия"
+                       TextChanged="OnDesignationTextChanged"
+                       Focused="OnDesignationFocused"
+                       Unfocused="OnDesignationUnfocused"
+                       BackgroundColor="Transparent" />
+            </Frame>
 
-            <Entry x:Name="ProductNameEntry"
-                   Placeholder="Наименование изделия" />
+            <Border x:Name="DesignationResultsBorder"
+                    Stroke="#D0D7DE"
+                    StrokeThickness="1"
+                    BackgroundColor="White"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 8">
+                <CollectionView x:Name="DesignationResultsList"
+                                SelectionMode="Single"
+                                SelectionChanged="OnDesignationSelected"
+                                MaximumHeightRequest="180">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Designation}"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Name}"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                <Entry x:Name="ProductNameEntry"
+                       Placeholder="Наименование изделия"
+                       TextChanged="OnProductNameTextChanged"
+                       Focused="OnProductNameFocused"
+                       BackgroundColor="Transparent" />
+            </Frame>
+
+            <Border x:Name="ProductNameResultsBorder"
+                    Stroke="#D0D7DE"
+                    StrokeThickness="1"
+                    BackgroundColor="White"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 8">
+                <CollectionView x:Name="ProductNameResultsList"
+                                SelectionMode="Single"
+                                SelectionChanged="OnProductNameSelected"
+                                MaximumHeightRequest="180">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Name}"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Designation}"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
 
             <Label Text="Клиент" />
 

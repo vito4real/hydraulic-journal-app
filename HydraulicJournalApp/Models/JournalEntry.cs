@@ -13,7 +13,9 @@ public class JournalEntry
     [Indexed]
     public int DeveloperId { get; set; }
 
+    // Дата выдачи ТЗ в работу
     public DateTime IssueDate { get; set; }
 
-    public KitType KitType { get; set; }
+    // Дата выдачи комплекта КД
+    public DateTime? DocumentationIssuedDate { get; set; }
 }

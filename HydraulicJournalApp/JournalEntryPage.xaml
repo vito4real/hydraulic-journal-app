@@ -156,14 +156,8 @@
                 </CollectionView>
             </Border>
 
+            <Label Text="Дата выдачи ТЗ в работу" />
             <DatePicker x:Name="IssueDatePicker" />
-
-            <Picker x:Name="KitTypePicker" Title="Тип комплекта">
-                <Picker.Items>
-                    <x:String>Опытный</x:String>
-                    <x:String>Контрольный</x:String>
-                </Picker.Items>
-            </Picker>
 
             <HorizontalStackLayout Spacing="10">
                 <Button Text="Сохранить запись"

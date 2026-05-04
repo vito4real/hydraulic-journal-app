@@ -18,11 +18,20 @@ public class DatabaseService
         await _db.CreateTableAsync<Customer>();
         await _db.CreateTableAsync<Product>();
         await _db.CreateTableAsync<JournalEntry>();
+
+        await EnsureJournalEntryDocumentationIssuedDateColumnAsync();
     }
 
-    // -----------------------------
-    // Developers
-    // -----------------------------
+    private async Task EnsureJournalEntryDocumentationIssuedDateColumnAsync()
+    {
+        var columns = await _db.QueryAsync<TableInfo>("PRAGMA table_info(JournalEntry)");
+
+        if (!columns.Any(x => x.name == nameof(JournalEntry.DocumentationIssuedDate)))
+        {
+            await _db.ExecuteAsync("ALTER TABLE JournalEntry ADD COLUMN DocumentationIssuedDate TEXT");
+        }
+    }
+
     public Task<List<Developer>> GetDevelopersAsync()
     {
         return _db.Table<Developer>()
@@ -43,15 +52,15 @@ public class DatabaseService
         if (existing != null)
             return existing.Id;
 
-        return await _db.InsertAsync(new Developer
+        var developer = new Developer
         {
             FullName = fullName
-        });
+        };
+
+        await _db.InsertAsync(developer);
+        return developer.Id;
     }
 
-    // -----------------------------
-    // Customers
-    // -----------------------------
     public Task<List<Customer>> GetCustomersAsync()
     {
         return _db.Table<Customer>()
@@ -72,15 +81,15 @@ public class DatabaseService
         if (existing != null)
             return existing.Id;
 
-        return await _db.InsertAsync(new Customer
+        var customer = new Customer
         {
             Name = name
-        });
+        };
+
+        await _db.InsertAsync(customer);
+        return customer.Id;
     }
 
-    // -----------------------------
-    // Products
-    // -----------------------------
     public Task<List<Product>> GetProductsAsync()
     {
         return _db.Table<Product>()
@@ -100,58 +109,29 @@ public class DatabaseService
             .FirstOrDefaultAsync(x => x.Id == customerId);
     }
 
-    public async Task<ProductDesignationCheckResult> CheckDesignationAsync(string designation, int customerId)
+    public Task<Product?> GetProductByDesignationAndCustomerAsync(string designation, int customerId)
     {
         designation = (designation ?? string.Empty).Trim();
 
-        if (string.IsNullOrWhiteSpace(designation))
-        {
-            return new ProductDesignationCheckResult
-            {
-                IsAllowed = false,
-                Exists = false,
-                Message = "Designation is required."
-            };
-        }
+        return _db.Table<Product>()
+            .FirstOrDefaultAsync(x => x.Designation == designation && x.CustomerId == customerId);
+    }
 
-        var existingProduct = await _db.Table<Product>()
+    public Task<Product?> GetProductByDesignationAsync(string designation)
+    {
+        designation = (designation ?? string.Empty).Trim();
+
+        return _db.Table<Product>()
             .FirstOrDefaultAsync(x => x.Designation == designation);
+    }
 
-        if (existingProduct == null)
-        {
-            return new ProductDesignationCheckResult
-            {
-                IsAllowed = true,
-                Exists = false,
-                Message = string.Empty
-            };
-        }
+    public async Task<List<Product>> GetProductsByDesignationAsync(string designation)
+    {
+        designation = (designation ?? string.Empty).Trim();
 
-        var existingCustomer = await _db.Table<Customer>()
-            .FirstOrDefaultAsync(x => x.Id == existingProduct.CustomerId);
-
-        var existingCustomerName = existingCustomer?.Name ?? "Unknown customer";
-
-        if (existingProduct.CustomerId != customerId)
-        {
-            return new ProductDesignationCheckResult
-            {
-                IsAllowed = false,
-                Exists = true,
-                ExistingProductId = existingProduct.Id,
-                ExistingCustomerName = existingCustomerName,
-                Message = $"Designation \"{designation}\" is already used for customer: {existingCustomerName}."
-            };
-        }
-
-        return new ProductDesignationCheckResult
-        {
-            IsAllowed = false,
-            Exists = true,
-            ExistingProductId = existingProduct.Id,
-            ExistingCustomerName = existingCustomerName,
-            Message = $"Designation \"{designation}\" already exists for this customer."
-        };
+        return await _db.Table<Product>()
+            .Where(x => x.Designation == designation)
+            .ToListAsync();
     }
 
     public async Task<int> AddProductAsync(string designation, string name, int customerId)
@@ -165,10 +145,10 @@ public class DatabaseService
         if (customerId <= 0)
             throw new Exception("Customer must be selected.");
 
-        var check = await CheckDesignationAsync(designation, customerId);
+        var existing = await GetProductByDesignationAndCustomerAsync(designation, customerId);
 
-        if (!check.IsAllowed)
-            throw new Exception(check.Message);
+        if (existing != null)
+            throw new Exception($"Designation \"{designation}\" already exists for this customer.");
 
         var product = new Product
         {
@@ -181,39 +161,14 @@ public class DatabaseService
         return product.Id;
     }
 
-    // -----------------------------
-    // Journal
-    // -----------------------------
-    public async Task<int> AddJournalEntryAsync(int productId, int developerId, DateTime issueDate, KitType kitType)
-    {
-        if (productId <= 0)
-            throw new Exception("Product must be selected.");
-
-        if (developerId <= 0)
-            throw new Exception("Developer must be selected.");
-
-        var entry = new JournalEntry
-        {
-            ProductId = productId,
-            DeveloperId = developerId,
-            IssueDate = issueDate,
-            KitType = kitType
-        };
-
-        await _db.InsertAsync(entry);
-        return entry.Id;
-    }
-
     public async Task<List<JournalEntryListItem>> GetJournalEntriesAsync()
     {
-        var entries = await _db.Table<JournalEntry>()
-            .ToListAsync();
-
+        var entries = await _db.Table<JournalEntry>().ToListAsync();
         var products = await _db.Table<Product>().ToListAsync();
         var developers = await _db.Table<Developer>().ToListAsync();
         var customers = await _db.Table<Customer>().ToListAsync();
 
-        var result = entries
+        return entries
             .Select(entry =>
             {
                 var product = products.FirstOrDefault(x => x.Id == entry.ProductId);
@@ -229,22 +184,19 @@ public class DatabaseService
                     ProductName = product?.Name ?? string.Empty,
                     DeveloperName = developer?.FullName ?? string.Empty,
                     IssueDate = entry.IssueDate,
-                    KitType = entry.KitType,
+                    DocumentationIssuedDate = entry.DocumentationIssuedDate,
                     CustomerName = customer?.Name ?? string.Empty
                 };
             })
             .ToList();
-
-        return result;
     }
 
     public async Task<int> AddJournalEntryWithProductAsync(
-    string designation,
-    string productName,
-    int customerId,
-    int developerId,
-    DateTime issueDate,
-    KitType kitType)
+        string designation,
+        string productName,
+        int customerId,
+        int developerId,
+        DateTime issueDate)
     {
         designation = (designation ?? string.Empty).Trim();
         productName = (productName ?? string.Empty).Trim();
@@ -258,46 +210,22 @@ public class DatabaseService
         if (developerId <= 0)
             throw new Exception("Разработчик должен быть выбран.");
 
-        var existingProduct = await _db.Table<Product>()
-            .FirstOrDefaultAsync(x => x.Designation == designation);
+        var product = await GetProductByDesignationAndCustomerAsync(designation, customerId);
 
-        if (existingProduct == null)
+        if (product == null)
         {
-            var newProduct = new Product
+            product = new Product
             {
                 Designation = designation,
                 Name = productName,
                 CustomerId = customerId
             };
 
-            await _db.InsertAsync(newProduct);
-
-            var newEntry = new JournalEntry
-            {
-                ProductId = newProduct.Id,
-                DeveloperId = developerId,
-                IssueDate = issueDate,
-                KitType = kitType
-            };
-
-            await _db.InsertAsync(newEntry);
-
-            return newEntry.Id;
-        }
-
-        if (existingProduct.CustomerId != customerId)
-        {
-            var existingCustomer = await _db.Table<Customer>()
-                .FirstOrDefaultAsync(x => x.Id == existingProduct.CustomerId);
-
-            var existingCustomerName = existingCustomer?.Name ?? "Неизвестный клиент";
-
-            throw new Exception(
-                $"Обозначение \"{designation}\" уже занято для клиента: {existingCustomerName}.");
+            await _db.InsertAsync(product);
         }
 
         var existingJournalEntry = await _db.Table<JournalEntry>()
-            .FirstOrDefaultAsync(x => x.ProductId == existingProduct.Id);
+            .FirstOrDefaultAsync(x => x.ProductId == product.Id);
 
         if (existingJournalEntry != null)
         {
@@ -307,10 +235,10 @@ public class DatabaseService
 
         var entry = new JournalEntry
         {
-            ProductId = existingProduct.Id,
+            ProductId = product.Id,
             DeveloperId = developerId,
             IssueDate = issueDate,
-            KitType = kitType
+            DocumentationIssuedDate = null
         };
 
         await _db.InsertAsync(entry);
@@ -318,12 +246,17 @@ public class DatabaseService
         return entry.Id;
     }
 
-    public Task<Product?> GetProductByDesignationAsync(string designation)
+    public async Task SetDocumentationIssuedDateAsync(int journalEntryId, DateTime date)
     {
-        designation = (designation ?? string.Empty).Trim();
+        var entry = await _db.Table<JournalEntry>()
+            .FirstOrDefaultAsync(x => x.Id == journalEntryId);
 
-        return _db.Table<Product>()
-            .FirstOrDefaultAsync(x => x.Designation == designation);
+        if (entry == null)
+            throw new Exception("Запись журнала не найдена.");
+
+        entry.DocumentationIssuedDate = date;
+
+        await _db.UpdateAsync(entry);
     }
 
     public Task<Developer?> GetDeveloperByIdAsync(int developerId)
@@ -349,7 +282,7 @@ public class DatabaseService
 
         var products = await _db.Table<Product>().ToListAsync();
 
-        var result = entries
+        return entries
             .Select(entry =>
             {
                 var product = products.FirstOrDefault(x => x.Id == entry.ProductId);
@@ -366,8 +299,6 @@ public class DatabaseService
             .Select(g => g.First())
             .OrderBy(x => x.Designation)
             .ToList();
-
-        return result;
     }
 }
 
@@ -378,13 +309,20 @@ public class JournalEntryListItem
     public string ProductName { get; set; } = string.Empty;
     public string DeveloperName { get; set; } = string.Empty;
     public DateTime IssueDate { get; set; }
-    public KitType KitType { get; set; }
+    public DateTime? DocumentationIssuedDate { get; set; }
     public string CustomerName { get; set; } = string.Empty;
 
-    public string KitTypeDisplay =>
-        KitType == KitType.Experimental ? "Опытный" : "Контрольный";
-
     public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
+
+    public string DocumentationIssuedDateDisplay =>
+        DocumentationIssuedDate.HasValue
+            ? DocumentationIssuedDate.Value.ToString("dd.MM.yyyy")
+            : "—";
+
+    public string DocumentationButtonText =>
+        DocumentationIssuedDate.HasValue
+            ? "Изменить дату КД"
+            : "Указать дату КД";
 }
 
 public class DeveloperProductListItem
@@ -395,4 +333,14 @@ public class DeveloperProductListItem
     public DateTime IssueDate { get; set; }
 
     public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
+}
+
+public class TableInfo
+{
+    public int cid { get; set; }
+    public string name { get; set; } = string.Empty;
+    public string type { get; set; } = string.Empty;
+    public int notnull { get; set; }
+    public string? dflt_value { get; set; }
+    public int pk { get; set; }
 }

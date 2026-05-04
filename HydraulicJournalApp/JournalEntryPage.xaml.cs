@@ -39,9 +39,6 @@ public partial class JournalEntryPage : ContentPage
         DeveloperResultsList.ItemsSource = _developers;
         DesignationResultsList.ItemsSource = _products;
         ProductNameResultsList.ItemsSource = _products;
-
-        if (KitTypePicker.SelectedIndex < 0)
-            KitTypePicker.SelectedIndex = 0;
     }
 
     private void SetProductFieldsEditable(bool isEditable)
@@ -290,23 +287,12 @@ public partial class JournalEntryPage : ContentPage
                 return;
             }
 
-            if (KitTypePicker.SelectedIndex < 0)
-            {
-                await DisplayAlert("Ошибка", "Выберите тип комплекта.", "OK");
-                return;
-            }
-
-            var kitType = KitTypePicker.SelectedIndex == 0
-                ? KitType.Experimental
-                : KitType.Control;
-
             await _db.AddJournalEntryWithProductAsync(
                 DesignationEntry.Text ?? string.Empty,
                 ProductNameEntry.Text ?? string.Empty,
                 customer.Id,
                 developer.Id,
-                IssueDatePicker.Date ?? DateTime.Now,
-                kitType);
+                IssueDatePicker.Date ?? DateTime.Now);
 
             await LoadDataAsync();
             ResetForm();
@@ -336,7 +322,6 @@ public partial class JournalEntryPage : ContentPage
         DeveloperResultsBorder.IsVisible = false;
 
         IssueDatePicker.Date = DateTime.Today;
-        KitTypePicker.SelectedIndex = 0;
 
         SetProductFieldsEditable(true);
     }

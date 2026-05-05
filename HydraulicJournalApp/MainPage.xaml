@@ -78,13 +78,20 @@
                         SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="1.6*,2*,1.4*,1.5*,1.7*,1.5*,1.5*"
-                          Padding="8"
-                          ColumnSpacing="8">
-                          <Grid.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="2"
-                                                 Tapped="OnJournalRowDoubleTapped"
-                                                 CommandParameter="{Binding Designation}" />
+                    <Grid x:Name="RowGrid"
+                            ColumnDefinitions="1.6*,2*,1.4*,1.5*,1.7*,1.5*,1.5*"
+                            Padding="8"
+                            ColumnSpacing="8"
+                            BackgroundColor="Transparent">
+
+                            <Grid.GestureRecognizers>
+                                   <PointerGestureRecognizer
+                                   PointerEntered="OnRowPointerEntered"
+                                   PointerExited="OnRowPointerExited" />
+                            
+                                   <TapGestureRecognizer NumberOfTapsRequired="2"
+                                                        Tapped="OnJournalRowDoubleTapped"
+                                                        CommandParameter="{Binding Designation}" />
                             </Grid.GestureRecognizers>
 
                         <Label Grid.Column="0"

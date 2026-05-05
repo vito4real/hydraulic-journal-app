@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HydraulicJournalApp.ProductsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Изделия">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="12">
+
+        <Label Grid.Row="0"
+               Text="Изделия"
+               FontSize="24"
+               FontAttributes="Bold"
+               Margin="0,0,0,12" />
+
+        <Frame Grid.Row="1"
+               Padding="6"
+               Margin="0,0,0,8"
+               BorderColor="#007ACC"
+               BackgroundColor="#F5FAFF"
+               CornerRadius="8"
+               HasShadow="False">
+            <Entry x:Name="ProductSearchEntry"
+                   Placeholder="Поиск по обозначению / наименованию / заказчику"
+                   TextChanged="OnSearchTextChanged"
+                   BackgroundColor="Transparent" />
+        </Frame>
+
+        <Grid Grid.Row="2"
+              ColumnDefinitions="1.8*,2.2*,1.8*"
+              Padding="8"
+              BackgroundColor="#D9D9D9"
+              ColumnSpacing="8">
+            <Label Grid.Column="0" Text="Обозначение" FontAttributes="Bold" />
+            <Label Grid.Column="1" Text="Наименование" FontAttributes="Bold" />
+            <Label Grid.Column="2" Text="Заказчик" FontAttributes="Bold" />
+        </Grid>
+
+        <CollectionView Grid.Row="3"
+                        x:Name="ProductsList"
+                        SelectionMode="Single"
+                        SelectionChanged="OnProductSelectionChanged"
+                        Margin="0,4,0,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="1.8*,2.2*,1.8*"
+                          Padding="8"
+                          ColumnSpacing="8">
+
+                        <Label Grid.Column="0"
+                               Text="{Binding Designation}"
+                               LineBreakMode="TailTruncation" />
+
+                        <Label Grid.Column="1"
+                               Text="{Binding ProductName}"
+                               LineBreakMode="TailTruncation" />
+
+                        <Label Grid.Column="2"
+                               Text="{Binding CustomerName}"
+                               LineBreakMode="TailTruncation" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

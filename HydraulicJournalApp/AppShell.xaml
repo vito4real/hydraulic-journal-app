@@ -12,6 +12,10 @@
             ContentTemplate="{DataTemplate local:MainPage}" />
 
         <ShellContent
+            Title="Изделия"
+            ContentTemplate="{DataTemplate local:ProductsPage}" />
+
+        <ShellContent
             Title="Разработчики"
             ContentTemplate="{DataTemplate local:DevelopersPage}" />
 

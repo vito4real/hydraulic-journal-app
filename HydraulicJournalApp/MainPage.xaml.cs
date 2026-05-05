@@ -94,6 +94,22 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async void OnJournalRowDoubleTapped(object sender, TappedEventArgs e)
+    {
+        try
+        {
+            if (e.Parameter is not string designation || string.IsNullOrWhiteSpace(designation))
+                return;
+
+            var encodedDesignation = Uri.EscapeDataString(designation);
+            await Shell.Current.GoToAsync($"{nameof(ProductDetailsPage)}?designation={encodedDesignation}");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
+    }
+
     private void OnResetFiltersClicked(object sender, EventArgs e)
     {
         DesignationSearchEntry.Text = string.Empty;

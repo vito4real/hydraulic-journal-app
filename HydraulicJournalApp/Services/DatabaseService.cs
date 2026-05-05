@@ -97,6 +97,45 @@ public class DatabaseService
             .ToListAsync();
     }
 
+    public async Task<List<ProductListItem>> GetProductListAsync()
+    {
+        var products = await _db.Table<Product>().ToListAsync();
+        var customers = await _db.Table<Customer>().ToListAsync();
+
+        return products
+            .GroupBy(x => x.Designation)
+            .Select(group =>
+            {
+                var productNames = group
+                    .Select(x => x.Name)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .ToList();
+
+                var customerNames = group
+                    .Select(product =>
+                        customers.FirstOrDefault(c => c.Id == product.CustomerId)?.Name ?? string.Empty)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                return new ProductListItem
+                {
+                    ProductId = group.First().Id,
+                    Designation = group.Key,
+                    ProductName = productNames.Count == 0
+                        ? string.Empty
+                        : string.Join(", ", productNames),
+                    CustomerName = customerNames.Count == 0
+                        ? string.Empty
+                        : string.Join(", ", customerNames)
+                };
+            })
+            .OrderBy(x => x.Designation)
+            .ToList();
+    }
+
     public Task<Product?> GetProductByIdAsync(int productId)
     {
         return _db.Table<Product>()
@@ -132,6 +171,78 @@ public class DatabaseService
         return await _db.Table<Product>()
             .Where(x => x.Designation == designation)
             .ToListAsync();
+    }
+
+    public async Task<ProductDetailsViewModel?> GetProductDetailsByDesignationAsync(string designation)
+    {
+        designation = (designation ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(designation))
+            return null;
+
+        var products = await _db.Table<Product>()
+            .Where(x => x.Designation == designation)
+            .ToListAsync();
+
+        if (products.Count == 0)
+            return null;
+
+        var customers = await _db.Table<Customer>().ToListAsync();
+        var entries = await _db.Table<JournalEntry>().ToListAsync();
+        var developers = await _db.Table<Developer>().ToListAsync();
+
+        var productIds = products.Select(x => x.Id).ToHashSet();
+
+        var journalItems = entries
+            .Where(x => productIds.Contains(x.ProductId))
+            .Select(entry =>
+            {
+                var product = products.FirstOrDefault(x => x.Id == entry.ProductId);
+                var customer = product == null
+                    ? null
+                    : customers.FirstOrDefault(x => x.Id == product.CustomerId);
+                var developer = developers.FirstOrDefault(x => x.Id == entry.DeveloperId);
+
+                return new ProductJournalListItem
+                {
+                    ProductId = product?.Id ?? 0,
+                    ProductName = product?.Name ?? string.Empty,
+                    CustomerName = customer?.Name ?? string.Empty,
+                    DeveloperName = developer?.FullName ?? string.Empty,
+                    IssueDate = entry.IssueDate,
+                    DocumentationIssuedDate = entry.DocumentationIssuedDate
+                };
+            })
+            .OrderBy(x => x.CustomerName)
+            .ThenByDescending(x => x.IssueDate)
+            .ToList();
+
+        var customerItems = products
+            .Select(product =>
+            {
+                var customer = customers.FirstOrDefault(x => x.Id == product.CustomerId);
+
+                return new ProductCustomerListItem
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    CustomerName = customer?.Name ?? string.Empty
+                };
+            })
+            .OrderBy(x => x.CustomerName)
+            .ToList();
+
+        return new ProductDetailsViewModel
+        {
+            Designation = designation,
+            ProductNames = products
+                .Select(x => x.Name)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .ToList(),
+            Customers = customerItems,
+            JournalEntries = journalItems
+        };
     }
 
     public async Task<int> AddProductAsync(string designation, string name, int customerId)
@@ -333,6 +444,51 @@ public class DeveloperProductListItem
     public DateTime IssueDate { get; set; }
 
     public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
+}
+
+public class ProductListItem
+{
+    public int ProductId { get; set; }
+    public string Designation { get; set; } = string.Empty;
+    public string ProductName { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+}
+
+public class ProductDetailsViewModel
+{
+    public string Designation { get; set; } = string.Empty;
+    public List<string> ProductNames { get; set; } = new();
+    public List<ProductCustomerListItem> Customers { get; set; } = new();
+    public List<ProductJournalListItem> JournalEntries { get; set; } = new();
+
+    public string ProductNamesDisplay =>
+        ProductNames.Count == 0
+            ? "—"
+            : string.Join(", ", ProductNames);
+}
+
+public class ProductCustomerListItem
+{
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+}
+
+public class ProductJournalListItem
+{
+    public int ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public string CustomerName { get; set; } = string.Empty;
+    public string DeveloperName { get; set; } = string.Empty;
+    public DateTime IssueDate { get; set; }
+    public DateTime? DocumentationIssuedDate { get; set; }
+
+    public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
+
+    public string DocumentationIssuedDateDisplay =>
+        DocumentationIssuedDate.HasValue
+            ? DocumentationIssuedDate.Value.ToString("dd.MM.yyyy")
+            : "—";
 }
 
 public class TableInfo

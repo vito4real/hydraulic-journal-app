@@ -2,7 +2,7 @@
 
 public class AccessGuardService
 {
-    private const string SecretWord = "о";
+    private const string SecretWord = "а";
 
     public async Task<bool> EnsureWriteAccessAsync(Page page)
     {

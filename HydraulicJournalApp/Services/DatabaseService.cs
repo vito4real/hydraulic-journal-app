@@ -205,6 +205,7 @@ public class DatabaseService
 
                 return new ProductJournalListItem
                 {
+                    JournalEntryId = entry.Id,
                     ProductId = product?.Id ?? 0,
                     ProductName = product?.Name ?? string.Empty,
                     CustomerName = customer?.Name ?? string.Empty,
@@ -476,6 +477,7 @@ public class ProductCustomerListItem
 
 public class ProductJournalListItem
 {
+    public int JournalEntryId { get; set; }
     public int ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
     public string CustomerName { get; set; } = string.Empty;
@@ -489,6 +491,11 @@ public class ProductJournalListItem
         DocumentationIssuedDate.HasValue
             ? DocumentationIssuedDate.Value.ToString("dd.MM.yyyy")
             : "—";
+
+    public string DocumentationButtonText =>
+        DocumentationIssuedDate.HasValue
+            ? "Изменить дату КД"
+            : "Указать дату КД";
 }
 
 public class TableInfo

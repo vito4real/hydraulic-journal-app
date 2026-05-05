@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using HydraulicJournalApp.Services;
+﻿using HydraulicJournalApp.Services;
 
 namespace HydraulicJournalApp;
 
@@ -52,46 +51,6 @@ public partial class MainPage : ContentPage
         .ToList();
 
         JournalList.ItemsSource = filtered;
-    }
-
-    private async void OnSetDocumentationIssuedDateClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            if (sender is not Button button || button.CommandParameter is not int journalEntryId)
-                return;
-
-            var input = await DisplayPromptAsync(
-                "Дата выдачи комплекта КД",
-                "Введите дату в формате dd.MM.yyyy",
-                accept: "Сохранить",
-                cancel: "Отмена",
-                placeholder: "24.04.2026",
-                initialValue: DateTime.Today.ToString("dd.MM.yyyy"));
-
-            if (string.IsNullOrWhiteSpace(input))
-                return;
-
-            if (!DateTime.TryParseExact(
-                    input.Trim(),
-                    "dd.MM.yyyy",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var date))
-            {
-                await DisplayAlert("Ошибка", "Введите дату в формате dd.MM.yyyy.", "OK");
-                return;
-            }
-
-            await _db.SetDocumentationIssuedDateAsync(journalEntryId, date);
-            await LoadJournalAsync();
-
-            await DisplayAlert("Готово", "Дата выдачи комплекта КД сохранена.", "OK");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Ошибка", ex.Message, "OK");
-        }
     }
 
     private async void OnJournalRowDoubleTapped(object sender, TappedEventArgs e)

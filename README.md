@@ -6,6 +6,24 @@ Built with .NET MAUI and SQLite for internal use in manufacturing environments.
 
 ![App Screenshot](assets/AppScreenshot_1.png)
 
+## 🚀 Deployment
+
+Run two commands in Developer PowerShell:
+
+   ```
+   dotnet build
+   ```
+
+   ```
+   dotnet publish -c Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained true
+   ```
+
+And copy files into the selected directory on server disk.
+
+## 🛢️ Database
+
+Never forget to copy ``` HydraulicJournal.db ``` file to save data if exists.
+
 ## 👥 Multi-user Usage
 
 - The application is designed for use from a **shared network folder**

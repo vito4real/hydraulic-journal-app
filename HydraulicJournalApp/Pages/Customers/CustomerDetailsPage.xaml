@@ -6,10 +6,17 @@
     Title="Клиент">
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="12">
-        <Label x:Name="CustomerNameLabel"
-               Text="Клиент"
-               FontSize="24"
-               FontAttributes="Bold" />
+        <Grid ColumnDefinitions="*,Auto">
+            <Label x:Name="CustomerNameLabel"
+                Grid.Column="0"
+                Text="Клиент"
+                FontSize="24"
+                FontAttributes="Bold" />
+
+            <Button Grid.Column="1"
+                    Text="Редактировать"
+                    Clicked="OnEditCustomerClicked" />
+        </Grid>
 
         <Label Grid.Row="1"
                Text="Изделия клиента"

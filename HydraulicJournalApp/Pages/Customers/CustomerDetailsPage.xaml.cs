@@ -41,4 +41,12 @@ public partial class CustomerDetailsPage : ContentPage
 
         CustomerProductsList.ItemsSource = await _db.GetProductsByCustomerAsync(_customerId);
     }
+
+    private async void OnEditCustomerClicked(object sender, EventArgs e)
+    {
+        if (_customerId <= 0)
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(CustomerEditPage)}?customerId={_customerId}");
+    }
 }

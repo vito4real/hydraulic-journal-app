@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="HydraulicJournalApp.ProductEditPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Редактирование изделия">
+
+    <VerticalStackLayout Padding="12" Spacing="12">
+        <Label Text="Редактирование изделия"
+               FontSize="24"
+               FontAttributes="Bold" />
+
+        <Entry x:Name="DesignationEntry"
+               Placeholder="Обозначение изделия" />
+
+        <Entry x:Name="ProductNameEntry"
+               Placeholder="Наименование изделия" />
+
+        <Label Text="Клиент" />
+
+        <Picker x:Name="CustomerPicker"
+                Title="Выберите клиента" />
+
+        <HorizontalStackLayout Spacing="10">
+            <Button Text="Сохранить"
+                    Clicked="OnSaveClicked" />
+
+            <Button Text="Отмена"
+                    Clicked="OnCancelClicked" />
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

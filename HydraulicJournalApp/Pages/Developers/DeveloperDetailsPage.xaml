@@ -6,10 +6,17 @@
     Title="Разработчик">
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="12">
-        <Label x:Name="DeveloperNameLabel"
-               Text="Разработчик"
-               FontSize="24"
-               FontAttributes="Bold" />
+        <Grid ColumnDefinitions="*,Auto">
+            <Label x:Name="DeveloperNameLabel"
+                Grid.Column="0"
+                Text="Разработчик"
+                FontSize="24"
+                FontAttributes="Bold" />
+
+            <Button Grid.Column="1"
+                    Text="Редактировать"
+                    Clicked="OnEditDeveloperClicked" />
+        </Grid>
 
         <Label Grid.Row="1"
                Text="Изделия разработчика"

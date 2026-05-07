@@ -93,4 +93,19 @@ public partial class ProductDetailsPage : ContentPage
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
+
+    private async void OnEditProductClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not Button button || button.CommandParameter is not int productId)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(ProductEditPage)}?productId={productId}");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
+    }
 }

@@ -25,6 +25,10 @@ public static class MauiProgram
         builder.Services.AddSingleton(new DatabaseService(dbPath));
         builder.Services.AddSingleton<AccessGuardService>();
 
+        builder.Services.AddTransient<ProductEditPage>();
+        builder.Services.AddTransient<CustomerEditPage>();
+        builder.Services.AddTransient<DeveloperEditPage>();
+
         return builder.Build();
     }
 }

@@ -412,6 +412,85 @@ public class DatabaseService
             .OrderBy(x => x.Designation)
             .ToList();
     }
+
+    // Additional methods for updating records.
+    public async Task UpdateCustomerAsync(int id, string name)
+    {
+        name = (name ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new Exception("Название клиента обязательно.");
+
+        var customer = await _db.Table<Customer>().FirstOrDefaultAsync(x => x.Id == id);
+
+        if (customer == null)
+            throw new Exception("Клиент не найден.");
+
+        var duplicate = await _db.Table<Customer>()
+            .FirstOrDefaultAsync(x => x.Name == name && x.Id != id);
+
+        if (duplicate != null)
+            throw new Exception("Клиент с таким названием уже существует.");
+
+        customer.Name = name;
+
+        await _db.UpdateAsync(customer);
+    }
+
+    public async Task UpdateDeveloperAsync(int id, string fullName)
+    {
+        fullName = (fullName ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(fullName))
+            throw new Exception("ФИО разработчика обязательно.");
+
+        var developer = await _db.Table<Developer>().FirstOrDefaultAsync(x => x.Id == id);
+
+        if (developer == null)
+            throw new Exception("Разработчик не найден.");
+
+        var duplicate = await _db.Table<Developer>()
+            .FirstOrDefaultAsync(x => x.FullName == fullName && x.Id != id);
+
+        if (duplicate != null)
+            throw new Exception("Разработчик с таким ФИО уже существует.");
+
+        developer.FullName = fullName;
+
+        await _db.UpdateAsync(developer);
+    }
+
+    public async Task UpdateProductAsync(int id, string designation, string name, int customerId)
+    {
+        designation = (designation ?? string.Empty).Trim();
+        name = (name ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(designation))
+            throw new Exception("Обозначение изделия обязательно.");
+
+        if (customerId <= 0)
+            throw new Exception("Клиент должен быть выбран.");
+
+        var product = await _db.Table<Product>().FirstOrDefaultAsync(x => x.Id == id);
+
+        if (product == null)
+            throw new Exception("Изделие не найдено.");
+
+        var duplicate = await _db.Table<Product>()
+            .FirstOrDefaultAsync(x =>
+                x.Designation == designation &&
+                x.CustomerId == customerId &&
+                x.Id != id);
+
+        if (duplicate != null)
+            throw new Exception("Такое обозначение уже существует у выбранного клиента.");
+
+        product.Designation = designation;
+        product.Name = name;
+        product.CustomerId = customerId;
+
+        await _db.UpdateAsync(product);
+    }
 }
 
 public class JournalEntryListItem

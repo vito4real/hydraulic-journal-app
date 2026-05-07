@@ -41,4 +41,12 @@ public partial class DeveloperDetailsPage : ContentPage
 
         DeveloperProductsList.ItemsSource = await _db.GetProductsByDeveloperAsync(_developerId);
     }
+
+    private async void OnEditDeveloperClicked(object sender, EventArgs e)
+    {
+        if (_developerId <= 0)
+            return;
+
+        await Shell.Current.GoToAsync($"{nameof(DeveloperEditPage)}?developerId={_developerId}");
+    }
 }

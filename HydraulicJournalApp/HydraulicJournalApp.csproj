@@ -67,25 +67,25 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="CustomerDetailsPage.xaml">
+	  <MauiXaml Update="Pages\Customers\CustomerDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="CustomersPage.xaml">
+	  <MauiXaml Update="Pages\Customers\CustomersPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="DeveloperDetailsPage.xaml">
+	  <MauiXaml Update="Pages\Developers\DeveloperDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="DevelopersPage.xaml">
+	  <MauiXaml Update="Pages\Developers\DevelopersPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="JournalEntryPage.xaml">
+	  <MauiXaml Update="Pages\Journal\JournalEntryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ProductDetailsPage.xaml">
+	  <MauiXaml Update="Pages\Products\ProductDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ProductsPage.xaml">
+	  <MauiXaml Update="Pages\Products\ProductsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

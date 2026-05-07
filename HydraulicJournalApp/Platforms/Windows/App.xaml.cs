@@ -1,25 +1,37 @@
 ﻿using Microsoft.UI.Xaml;
+using System.Runtime.InteropServices;
+using WinRT.Interop;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace HydraulicJournalApp.WinUI;
 
-namespace HydraulicJournalApp.WinUI
+public partial class App : MauiWinUIApplication
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
-    public partial class App : MauiWinUIApplication
-    {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
-        public App()
-        {
-            this.InitializeComponent();
-        }
+    private const int SW_MAXIMIZE = 3;
 
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    public App()
+    {
+        InitializeComponent();
     }
 
+    protected override MauiApp CreateMauiApp()
+    {
+        return MauiProgram.CreateMauiApp();
+    }
+
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
+        base.OnLaunched(args);
+
+        var mauiWindow = Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault();
+
+        if (mauiWindow?.Handler?.PlatformView is not Microsoft.UI.Xaml.Window nativeWindow)
+            return;
+
+        var hWnd = WindowNative.GetWindowHandle(nativeWindow);
+
+        ShowWindow(hWnd, SW_MAXIMIZE);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 }

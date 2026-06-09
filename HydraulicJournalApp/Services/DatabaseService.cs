@@ -304,11 +304,12 @@ public class DatabaseService
     }
 
     public async Task<int> AddJournalEntryWithProductAsync(
-        string designation,
-        string productName,
-        int customerId,
-        int developerId,
-        DateTime issueDate)
+    string designation,
+    string productName,
+    int customerId,
+    int developerId,
+    DateTime issueDate,
+    DateTime? documentationIssuedDate)
     {
         designation = (designation ?? string.Empty).Trim();
         productName = (productName ?? string.Empty).Trim();
@@ -350,7 +351,7 @@ public class DatabaseService
             ProductId = product.Id,
             DeveloperId = developerId,
             IssueDate = issueDate,
-            DocumentationIssuedDate = null
+            DocumentationIssuedDate = documentationIssuedDate
         };
 
         await _db.InsertAsync(entry);

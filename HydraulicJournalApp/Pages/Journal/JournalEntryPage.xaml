@@ -157,7 +157,30 @@
             </Border>
 
             <Label Text="Дата выдачи ТЗ в работу" />
-            <DatePicker x:Name="IssueDatePicker" />
+
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                 <Entry x:Name="IssueDateEntry"
+                       Placeholder="дд.мм.гггг"
+                       Keyboard="Numeric"
+                       BackgroundColor="Transparent" />
+            </Frame>
+
+            <Label Text="Дата выдачи комплекта КД" />
+
+            <Frame Padding="6"
+                   BorderColor="#007ACC"
+                   BackgroundColor="#F5FAFF"
+                   CornerRadius="8"
+                   HasShadow="False">
+                 <Entry x:Name="DocumentationIssuedDateEntry"
+                       Placeholder="дд.мм.гггг — можно оставить пустым"
+                       Keyboard="Numeric"
+                       BackgroundColor="Transparent" />
+            </Frame>
 
             <HorizontalStackLayout Spacing="10">
                 <Button Text="Сохранить запись"

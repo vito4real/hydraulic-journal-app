@@ -1,5 +1,6 @@
 ﻿using HydraulicJournalApp.Models;
 using HydraulicJournalApp.Services;
+using System.Globalization;
 
 namespace HydraulicJournalApp;
 
@@ -27,6 +28,8 @@ public partial class JournalEntryPage : ContentPage
         base.OnAppearing();
         await LoadDataAsync();
         SetProductFieldsEditable(true);
+        if (string.IsNullOrWhiteSpace(IssueDateEntry.Text))
+            IssueDateEntry.Text = DateTime.Today.ToString("dd.MM.yyyy");
     }
 
     private async Task LoadDataAsync()
@@ -287,12 +290,25 @@ public partial class JournalEntryPage : ContentPage
                 return;
             }
 
+            if (!TryParseRequiredDate(IssueDateEntry.Text, out var issueDate))
+            {
+                await DisplayAlert("Ошибка", "Введите дату выдачи ТЗ в формате dd.MM.yyyy.", "OK");
+                return;
+            }
+
+            if (!TryParseOptionalDate(DocumentationIssuedDateEntry.Text, out var documentationIssuedDate))
+            {
+                await DisplayAlert("Ошибка", "Введите дату выдачи КД в формате dd.MM.yyyy или оставьте поле пустым.", "OK");
+                return;
+            }
+
             await _db.AddJournalEntryWithProductAsync(
                 DesignationEntry.Text ?? string.Empty,
                 ProductNameEntry.Text ?? string.Empty,
                 customer.Id,
                 developer.Id,
-                IssueDatePicker.Date ?? DateTime.Now);
+                issueDate,
+                documentationIssuedDate);
 
             await LoadDataAsync();
             ResetForm();
@@ -321,7 +337,8 @@ public partial class JournalEntryPage : ContentPage
         CustomerResultsBorder.IsVisible = false;
         DeveloperResultsBorder.IsVisible = false;
 
-        IssueDatePicker.Date = DateTime.Today;
+        IssueDateEntry.Text = DateTime.Today.ToString("dd.MM.yyyy");
+        DocumentationIssuedDateEntry.Text = string.Empty;
 
         SetProductFieldsEditable(true);
     }
@@ -329,5 +346,38 @@ public partial class JournalEntryPage : ContentPage
     private void OnResetClicked(object sender, EventArgs e)
     {
         ResetForm();
+    }
+
+    private static bool TryParseRequiredDate(string? value, out DateTime date)
+    {
+        return DateTime.TryParseExact(
+            (value ?? string.Empty).Trim(),
+            "dd.MM.yyyy",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out date);
+    }
+
+    private static bool TryParseOptionalDate(string? value, out DateTime? date)
+    {
+        date = null;
+
+        var text = (value ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(text))
+            return true;
+
+        if (!DateTime.TryParseExact(
+                text,
+                "dd.MM.yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate))
+        {
+            return false;
+        }
+
+        date = parsedDate;
+        return true;
     }
 }

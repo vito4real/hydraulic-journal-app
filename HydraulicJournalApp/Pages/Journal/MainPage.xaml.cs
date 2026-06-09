@@ -47,10 +47,26 @@ public partial class MainPage : ContentPage
             (string.IsNullOrWhiteSpace(developerFilter) ||
              x.DeveloperName.Contains(developerFilter, StringComparison.OrdinalIgnoreCase))
         )
-        .OrderBy(x => x.Designation)
+        .OrderBy(x => ExtractFirstNumberFromDesignation(x.Designation))
+        .ThenBy(x => x.Designation)
         .ToList();
 
         JournalList.ItemsSource = filtered;
+    }
+
+    private static int ExtractFirstNumberFromDesignation(string designation)
+    {
+        if (string.IsNullOrWhiteSpace(designation))
+            return int.MaxValue;
+
+        var match = System.Text.RegularExpressions.Regex.Match(designation, @"\d+");
+
+        if (!match.Success)
+            return int.MaxValue;
+
+        return int.TryParse(match.Value, out var number)
+            ? number
+            : int.MaxValue;
     }
 
     private async void OnJournalRowDoubleTapped(object sender, TappedEventArgs e)

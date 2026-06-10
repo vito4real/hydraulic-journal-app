@@ -6,9 +6,11 @@
     Title="Разработчики">
 
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="12">
-        <Label Text="Разработчики"
-               FontSize="24"
-               FontAttributes="Bold" />
+        <Label x:Name="TotalDevelopersLabel"
+            Text="Всего разработчиков: 0"
+            FontSize="18"
+            FontAttributes="Bold"
+            TextColor="Black" />
 
         <VerticalStackLayout Grid.Row="1" Spacing="8" Margin="0,12,0,12">
             <Entry x:Name="DeveloperEntry" Placeholder="ФИО разработчика" />

@@ -25,6 +25,10 @@ public partial class DevelopersPage : ContentPage
     private async Task LoadDataAsync()
     {
         _allDevelopers = await _db.GetDevelopersAsync();
+
+        TotalDevelopersLabel.Text =
+        $"Всего разработчиков: {_allDevelopers.Count}";
+
         ApplyFilter();
     }
 

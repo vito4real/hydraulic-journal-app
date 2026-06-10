@@ -25,6 +25,7 @@ public partial class CustomersPage : ContentPage
     private async Task LoadDataAsync()
     {
         _allCustomers = await _db.GetCustomersAsync();
+        TotalCustomersLabel.Text = $"Всего клиентов: {_allCustomers.Count}";
         ApplyFilter();
     }
 

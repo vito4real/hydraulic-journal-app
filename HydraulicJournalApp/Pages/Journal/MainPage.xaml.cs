@@ -27,6 +27,7 @@ public partial class MainPage : ContentPage
     private async Task LoadJournalAsync()
     {
         _allJournalEntries = await _db.GetJournalEntriesAsync();
+        TotalJournalEntriesLabel.Text = $"Всего записей: {_allJournalEntries.Count}";
         ApplyFilters();
     }
 

@@ -24,6 +24,7 @@ public partial class ProductsPage : ContentPage
     private async Task LoadDataAsync()
     {
         _allProducts = await _db.GetProductListAsync();
+        TotalProductsLabel.Text = $"Всего изделий: {_allProducts.Count}";
         ApplyFilter();
     }
 

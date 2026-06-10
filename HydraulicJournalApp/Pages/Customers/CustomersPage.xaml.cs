@@ -80,4 +80,34 @@ public partial class CustomersPage : ContentPage
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
+
+    private async void OnDeleteCustomerClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not Button button || button.CommandParameter is not int customerId)
+                return;
+
+            var confirmed = await DisplayAlert(
+                "Подтверждение",
+                "Удалить этого клиента?",
+                "Удалить",
+                "Отмена");
+
+            if (!confirmed)
+                return;
+
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
+            await _db.DeleteCustomerAsync(customerId);
+            await LoadDataAsync();
+
+            await DisplayAlert("Готово", "Клиент удалён.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
+    }
 }

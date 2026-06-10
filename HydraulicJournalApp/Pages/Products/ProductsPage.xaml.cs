@@ -6,11 +6,13 @@ public partial class ProductsPage : ContentPage
 {
     private readonly DatabaseService _db;
     private List<ProductListItem> _allProducts = new();
+    private readonly AccessGuardService _accessGuard;
 
-    public ProductsPage(DatabaseService db)
+    public ProductsPage(DatabaseService db, AccessGuardService accessGuard)
     {
         InitializeComponent();
         _db = db;
+        _accessGuard = accessGuard;
     }
 
     protected override async void OnAppearing()
@@ -58,6 +60,36 @@ public partial class ProductsPage : ContentPage
 
             var designation = Uri.EscapeDataString(product.Designation);
             await Shell.Current.GoToAsync($"{nameof(ProductDetailsPage)}?designation={designation}");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
+    }
+
+    private async void OnDeleteProductClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not Button button || button.CommandParameter is not string designation)
+                return;
+
+            var confirmed = await DisplayAlert(
+                "Подтверждение",
+                $"Удалить изделие \"{designation}\"?",
+                "Удалить",
+                "Отмена");
+
+            if (!confirmed)
+                return;
+
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
+            await _db.DeleteProductsByDesignationAsync(designation);
+            await LoadDataAsync();
+
+            await DisplayAlert("Готово", "Изделие удалено.", "OK");
         }
         catch (Exception ex)
         {

@@ -16,17 +16,17 @@
         </VerticalStackLayout>
 
         <Frame Grid.Row="2"
-            Padding="6"
-            Margin="0,0,0,8"
-            BorderColor="#007ACC"
-            BackgroundColor="#F5FAFF"
-            CornerRadius="8"
-            HasShadow="False">
+               Padding="6"
+               Margin="0,0,0,8"
+               BorderColor="#007ACC"
+               BackgroundColor="#F5FAFF"
+               CornerRadius="8"
+               HasShadow="False">
 
             <Entry x:Name="CustomerSearchEntry"
-                Placeholder="Поиск по клиенту"
-                TextChanged="OnSearchTextChanged"
-                BackgroundColor="Transparent" />
+                   Placeholder="Поиск по клиенту"
+                   TextChanged="OnSearchTextChanged"
+                   BackgroundColor="Transparent" />
         </Frame>
 
         <Grid Grid.Row="3"
@@ -45,10 +45,28 @@
                         Margin="0,4,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*"
-                          Padding="8">
-                        <Label Text="{Binding Name}"
-                               VerticalOptions="Center" />
+                    <Grid ColumnDefinitions="3*,Auto"
+                          Padding="8"
+                          ColumnSpacing="10">
+
+                        <Label Grid.Column="0"
+                               Text="{Binding Name}"
+                               VerticalOptions="Center"
+                               LineBreakMode="TailTruncation" />
+
+                        <Button Grid.Column="1"
+                                Text="🗑"
+                                FontSize="16"
+                                WidthRequest="36"
+                                HeightRequest="36"
+                                Padding="0"
+                                CornerRadius="6"
+                                HorizontalOptions="End"
+                                VerticalOptions="Center"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                CommandParameter="{Binding Id}"
+                                Clicked="OnDeleteCustomerClicked" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

@@ -503,6 +503,67 @@ public class DatabaseService
 
         await _db.DeleteAsync(entry);
     }
+
+    public async Task DeleteCustomerAsync(int customerId)
+    {
+        var customer = await _db.Table<Customer>().FirstOrDefaultAsync(x => x.Id == customerId);
+
+        if (customer == null)
+            throw new Exception("Клиент не найден.");
+
+        var hasProducts = await _db.Table<Product>()
+            .FirstOrDefaultAsync(x => x.CustomerId == customerId);
+
+        if (hasProducts != null)
+            throw new Exception("Нельзя удалить клиента: сначала удалите связанные изделия.");
+
+        await _db.DeleteAsync(customer);
+    }
+
+    public async Task DeleteDeveloperAsync(int developerId)
+    {
+        var developer = await _db.Table<Developer>().FirstOrDefaultAsync(x => x.Id == developerId);
+
+        if (developer == null)
+            throw new Exception("Разработчик не найден.");
+
+        var hasJournalEntries = await _db.Table<JournalEntry>()
+            .FirstOrDefaultAsync(x => x.DeveloperId == developerId);
+
+        if (hasJournalEntries != null)
+            throw new Exception("Нельзя удалить разработчика: сначала удалите связанные записи журнала.");
+
+        await _db.DeleteAsync(developer);
+    }
+
+    public async Task DeleteProductsByDesignationAsync(string designation)
+    {
+        designation = (designation ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(designation))
+            throw new Exception("Обозначение изделия не указано.");
+
+        var products = await _db.Table<Product>()
+            .Where(x => x.Designation == designation)
+            .ToListAsync();
+
+        if (products.Count == 0)
+            throw new Exception("Изделие не найдено.");
+
+        var productIds = products.Select(x => x.Id).ToHashSet();
+
+        var journalEntries = await _db.Table<JournalEntry>().ToListAsync();
+
+        var hasJournalEntries = journalEntries.Any(x => productIds.Contains(x.ProductId));
+
+        if (hasJournalEntries)
+            throw new Exception("Нельзя удалить изделие: сначала удалите связанные записи журнала.");
+
+        foreach (var product in products)
+        {
+            await _db.DeleteAsync(product);
+        }
+    }
 }
 
 public class JournalEntryListItem

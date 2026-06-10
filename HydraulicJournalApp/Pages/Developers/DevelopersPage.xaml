@@ -45,10 +45,28 @@
                         Margin="0,4,0,0">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*"
-                          Padding="8">
-                        <Label Text="{Binding FullName}"
-                               VerticalOptions="Center" />
+                    <Grid ColumnDefinitions="3*,Auto"
+                          Padding="8"
+                          ColumnSpacing="10">
+
+                        <Label Grid.Column="0"
+                               Text="{Binding FullName}"
+                               VerticalOptions="Center"
+                               LineBreakMode="TailTruncation" />
+
+                        <Button Grid.Column="1"
+                                Text="🗑"
+                                FontSize="16"
+                                WidthRequest="36"
+                                HeightRequest="36"
+                                Padding="0"
+                                CornerRadius="6"
+                                HorizontalOptions="End"
+                                VerticalOptions="Center"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                CommandParameter="{Binding Id}"
+                                Clicked="OnDeleteDeveloperClicked" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

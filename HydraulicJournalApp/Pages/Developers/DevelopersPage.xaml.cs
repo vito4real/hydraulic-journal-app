@@ -80,4 +80,34 @@ public partial class DevelopersPage : ContentPage
             await DisplayAlert("Ошибка", ex.Message, "OK");
         }
     }
+
+    private async void OnDeleteDeveloperClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not Button button || button.CommandParameter is not int developerId)
+                return;
+
+            var confirmed = await DisplayAlert(
+                "Подтверждение",
+                "Удалить этого разработчика?",
+                "Удалить",
+                "Отмена");
+
+            if (!confirmed)
+                return;
+
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
+            await _db.DeleteDeveloperAsync(developerId);
+            await LoadDataAsync();
+
+            await DisplayAlert("Готово", "Разработчик удалён.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
+    }
 }

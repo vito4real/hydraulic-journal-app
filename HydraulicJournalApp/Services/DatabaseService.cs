@@ -492,6 +492,17 @@ public class DatabaseService
 
         await _db.UpdateAsync(product);
     }
+
+    public async Task DeleteJournalEntryAsync(int journalEntryId)
+    {
+        var entry = await _db.Table<JournalEntry>()
+            .FirstOrDefaultAsync(x => x.Id == journalEntryId);
+
+        if (entry == null)
+            throw new Exception("Запись журнала не найдена.");
+
+        await _db.DeleteAsync(entry);
+    }
 }
 
 public class JournalEntryListItem

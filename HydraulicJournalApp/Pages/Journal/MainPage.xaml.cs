@@ -5,12 +5,17 @@ namespace HydraulicJournalApp;
 public partial class MainPage : ContentPage
 {
     private readonly DatabaseService _db;
+    private readonly AccessGuardService _accessGuard;
     private List<JournalEntryListItem> _allJournalEntries = new();
 
-    public MainPage(DatabaseService db)
+    public MainPage(
+    DatabaseService db,
+    AccessGuardService accessGuard)
     {
         InitializeComponent();
+
         _db = db;
+        _accessGuard = accessGuard;
     }
 
     protected override async void OnAppearing()
@@ -108,5 +113,35 @@ public partial class MainPage : ContentPage
         DeveloperSearchEntry.Text = string.Empty;
 
         ApplyFilters();
+    }
+
+    private async void OnDeleteJournalEntryClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is not Button button || button.CommandParameter is not int journalEntryId)
+                return;
+
+            var confirmed = await DisplayAlert(
+                "Подтверждение",
+                "Удалить эту запись из журнала?",
+                "Удалить",
+                "Отмена");
+
+            if (!confirmed)
+                return;
+
+            if (!await _accessGuard.EnsureWriteAccessAsync(this))
+                return;
+
+            await _db.DeleteJournalEntryAsync(journalEntryId);
+            await LoadJournalAsync();
+
+            await DisplayAlert("Готово", "Запись удалена.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ошибка", ex.Message, "OK");
+        }
     }
 }

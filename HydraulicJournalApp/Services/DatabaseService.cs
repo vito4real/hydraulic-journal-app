@@ -578,6 +578,11 @@ public class JournalEntryListItem
 
     public string IssueDateDisplay => IssueDate.ToString("dd.MM.yyyy");
 
+    public string RowBackgroundColor =>
+    DocumentationIssuedDate.HasValue
+        ? "Transparent"
+        : "#FFF8D6";
+
     public string DocumentationIssuedDateDisplay =>
         DocumentationIssuedDate.HasValue
             ? DocumentationIssuedDate.Value.ToString("dd.MM.yyyy")

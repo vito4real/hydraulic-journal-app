@@ -91,22 +91,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void OnRowPointerEntered(object sender, PointerEventArgs e)
-    {
-        if (sender is Grid grid)
-        {
-            grid.BackgroundColor = Color.FromArgb("#EAF4FF"); // лёгкий синий
-        }
-    }
-
-    private void OnRowPointerExited(object sender, PointerEventArgs e)
-    {
-        if (sender is Grid grid)
-        {
-            grid.BackgroundColor = Colors.Transparent;
-        }
-    }
-
     private void OnResetFiltersClicked(object sender, EventArgs e)
     {
         DesignationSearchEntry.Text = string.Empty;
